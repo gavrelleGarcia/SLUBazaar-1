@@ -19,5 +19,6 @@
     "phpGetterSetter.redirect": true,
     "phpGetterSetter.short": true,
     "phpGettersSetters.generatePHPDoc": true,
-    "phpGettersSetters.templatesDir": ""
+    "phpGettersSetters.templatesDir": "",
+    "intelephense.environment.phpVersion": "8.2.0"
 }
