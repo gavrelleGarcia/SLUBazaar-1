@@ -22,8 +22,6 @@ class Bid
 
     
 
-
-
     /**
      * Get the value of bidId
      */
