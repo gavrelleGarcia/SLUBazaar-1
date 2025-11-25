@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-require '../model/Bid.php';
-require '../model/Item.php';
+require_once '../model/Bid.php';
+require_once '../model/Item.php';
 
 class BidRepository 
 {
@@ -17,7 +17,8 @@ class BidRepository
 
 
 
-    public function getBidsByUserId(int $userId) {
+    public function getBidsByUserId(int $userId) : array
+    {
         $query = "SELECT * FROM bid WHERE `bidder_id` = ?";
         $statement = $this->db->prepare($query);
 
@@ -29,11 +30,20 @@ class BidRepository
         if (!$statement->execute())
             throw new Exception("getBidsByUserId has an error: " . $statement->error);
 
+        $results = $statement->get_result();
+        $rows = $results->fetch_all(MYSQLI_ASSOC);
         $statement->close();
+
+        $bidsOfUser = [];
+        foreach ($rows as $row) 
+            $bidsOfUser[] = Bid::fromArray($row); 
+        
+        return $bidsOfUser;
     }
 
 
-    public function getBidsByItemId(int $itemId) {
+    public function getBidsByItemId(int $itemId) : array
+    {
             $query = "SELECT * FROM bid WHERE `item_id` = ?";
             $statement = $this->db->prepare($query);
 
@@ -45,11 +55,20 @@ class BidRepository
             if (!$statement->execute())
                 throw new Exception("Failed to do getBidsByItemId: " . $statement->error);
 
+            $results = $statement->get_result();
+            $rows = $results->fetch_all(MYSQLI_ASSOC);
             $statement->close();
+
+            $bidsOfItem = [];
+            foreach($rows as $row) 
+                $bidsOfItem[] = Bid::fromArray($row);
+
+            return $bidsOfItem;
     }
 
 
-    public function getActiveBidsByUserId(int $userId) : array {
+    public function getActiveBidsByUserId(int $userId) : array 
+    {
         $query = "SELECT bid.* FROM bid
                   JOIN item ON bid.item_id = item.item_id
                   WHERE bid.bidder_id = ? 
@@ -79,7 +98,7 @@ class BidRepository
     }
 
 
-    public function placeBid(Bid $bid)
+    public function placeBid(Bid $bid) : void
     {
         $query = "INSERT INTO bid (item_id, bidder_id, bid_amount) VALUES (?, ?, ?)";
         $statement = $this->db->prepare($query);
@@ -95,9 +114,34 @@ class BidRepository
         if (!$statement->execute())
             throw new Exception("Failed to place bid: " . $statement->error);
 
-
+        $bidId = $this->db->insert_id;
+        $bid->setBidId($bidId);
 
         $statement->close();
+    }
+
+
+
+    public function getBidById(int $bidId) : ?Bid
+    {
+        $query = "SELECT * FROM bid WHERE bid_id = ?";
+        $statement = $this->db->prepare($query);
+
+        if (!$statement)
+            throw new Exception("Failed preparing the query for getBidById: " . $this->db->error);
+
+        $statement->bind_param('i', $bidId);
+        
+        if (!$statement->execute())
+            throw new Exception("Failed to get Bid by Id: " . $statement->error);
+
+        $result = $statement->get_result();
+        $row = $result->fetch_assoc();
+        $statement->close();
+
+        if (!$row)
+            return null;
+        return Bid::fromArray($row);
     }
 
 
