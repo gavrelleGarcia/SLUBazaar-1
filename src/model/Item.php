@@ -32,7 +32,7 @@ enum Category : string
 class Item 
 {
 
-    private int $itemId;
+    private ?int $itemId;
     private int $sellerId;
     private string $title;
     private string $description;
@@ -42,26 +42,47 @@ class Item
     private DateTimeImmutable $auctionStart;
     private DateTimeImmutable $auctionEnd;
     private ItemStatus $itemStatus;
-    private string $meetUpCode;
+    private ?string $meetUpCode;
     private Category $category;
 
-    public function __construct(int $sellerId, string $title, string $description, float $startingBid, 
-                                float $currentBid, DateTimeImmutable $auctionStart, DateTimeImmutable $auctionEnd, 
-                                ItemStatus $itemStatus, string $meetUpCode, Category $category)
+    public function __construct(?int $itemId, int $sellerId, string $title, string $description, 
+                                float $startingBid, float $currentBid, DateTimeImmutable $createdAt, 
+                                DateTimeImmutable $auctionStart, DateTimeImmutable $auctionEnd, 
+                                ItemStatus $itemStatus, ?string $meetUpCode, Category $category)
     {
+        $this->itemId = $itemId; 
         $this->sellerId = $sellerId;
         $this->title = $title;
         $this->description = $description;
         $this->startingBid = $startingBid;
         $this->currentBid = $currentBid;
+        $this->createdAt = $createdAt;
         $this->auctionStart = $auctionStart;
         $this->auctionEnd = $auctionEnd;
         $this->itemStatus = $itemStatus;
         $this->meetUpCode = $meetUpCode;
         $this->category = $category;
-        $this->createdAt = new DateTimeImmutable();
     }
 
+
+
+    public static function fromArray(array $item) : self 
+    {
+        return new self(
+            (int)$item['item_id'], 
+            (int)$item['seller_id'], 
+            $item['title'], 
+            $item['description'], 
+            (float)$item['starting_bid'], 
+            (float)$item['current_bid'], 
+            new DateTimeImmutable($item['created_at']), 
+            new DateTimeImmutable($item['auction_start']), 
+            new DateTimeImmutable($item['auction_end']),
+            ItemStatus::from($item['item_status']), 
+            $item['meetup_code'] ?? null, 
+            Category::from($item['category'])
+        );
+    }
 
     
 
@@ -70,7 +91,7 @@ class Item
     /**
      * Get the value of itemId
      */
-    public function getItemId(): int
+    public function getItemId(): ?int
     {
         return $this->itemId;
     }
@@ -232,7 +253,7 @@ class Item
     /**
      * Get the value of meetUpCode
      */
-    public function getMeetUpCode(): string
+    public function getMeetUpCode(): ?string
     {
         return $this->meetUpCode;
     }

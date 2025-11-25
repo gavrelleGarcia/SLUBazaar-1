@@ -4,24 +4,40 @@ declare(strict_types=1);
 
 class Notification 
 {
-    private int $notifId;
+    private ?int $notifId;
     private int $userId;
     private string $notifTitle;
     private string $content;
     private string $notifType;
     private DateTimeImmutable $notifTime;
 
-    public function __construct(int $userId, string $notifTitle, string $content, string $notifType) 
+    public function __construct(?int $notifId, int $userId, string $notifTitle, string $content, 
+                                string $notifType, DateTimeImmutable $notifTime) 
     {
+        $this->notifId = $notifId;
         $this->userId = $userId;
         $this->notifTitle = $notifTitle;
         $this->content = $content;
         $this->notifType = $notifType;
-        $this->notifTime = new DateTimeImmutable();
+        $this->notifTime = $notifTime;
     }
 
 
-    public function getNotifId() : int 
+
+    public static function fromArray(array $notification) : self
+    {
+        return new self(
+            (int)$notification['notif_id'], 
+            (int)$notification['user_id'], 
+            $notification['notif_title'], 
+            $notification['content'], 
+            $notification['notif_type'], 
+            new DateTimeImmutable($notification['notif_time'])
+        );
+    }
+
+
+    public function getNotifId() : ?int 
     {
         return $this->notifId;
     }

@@ -4,22 +4,24 @@ declare(strict_types=1);
 
 enum Status : string
 {
-    case Open = 'Open';
+    case Active = 'Active';
     case Archived = 'Archived';
 }
 
 class Conversation 
 {
     
-    private int $conversationId;
+    private ?int $conversationId;
     private int $itemId;
     private int $buyerId;
     private int $sellerId;
     private Status $status;
 
 
-    public function __construct(int $itemId, int $buyerId, int $sellerId, Status $status) 
+    public function __construct(?int $conversationId, int $itemId, int $buyerId, 
+                                int $sellerId, Status $status) 
     {
+        $this->conversationId = $conversationId;
         $this->itemId = $itemId;
         $this->buyerId = $buyerId;
         $this->sellerId = $sellerId;
@@ -27,7 +29,20 @@ class Conversation
     }
 
 
-    public function getConversationId() : int 
+    public static function fromArray(array $conversation) : self
+    {
+        $status = $conversation['status'];
+        return new self(
+            (int)$conversation['conversation_id'],
+            (int)$conversation['item_id'],
+            (int)$conversation['buyer_id'],
+            (int)$conversation['seller_id'],
+            Status::from($conversation['status'])
+        );
+    }
+
+
+    public function getConversationId() : ?int 
     {
         return $this->conversationId;
     }

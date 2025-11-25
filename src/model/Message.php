@@ -3,25 +3,40 @@ declare(strict_types=1);
 
 class Message 
 {
-    private int $messageId;
+    private ?int $messageId;
     private int $conversationId;
     private string $messageText;
     private bool $isSeller;
     private DateTimeImmutable $createdAt;
 
-    public function __construct(int $conversationId, string $messageText, bool $isSeller)
-    {
+    public function __construct(?int $messageId, int $conversationId, string $messageText, 
+                                bool $isSeller, DateTimeImmutable $createdAt)
+    {   
+        $this->messageId = $messageId;
         $this->conversationId = $conversationId;
         $this->messageText = $messageText;
         $this->isSeller = $isSeller;
-        $this->createdAt = new DateTimeImmutable();
+        $this->createdAt = $createdAt;
+    }
+
+
+
+    public static function fromArray(array $message) : self
+    {
+        return new self (
+            (int)$message['message_id'], 
+            (int)$message['conversation_id'], 
+            $message['message_text'], 
+            (bool)$message['is_seller'], 
+            new DateTimeImmutable($message['created_at'])
+        );
     }
     
 
     /**
      * Get the value of messageId
      */
-    public function getMessageId(): int
+    public function getMessageId(): ?int
     {
         return $this->messageId;
     }

@@ -20,19 +20,23 @@ enum ReportStatus : string
 
 class Report 
 {
-    private int $reportId;
+    private ?int $reportId;
     private int $reporterId;
-    private int $targetUserId;
-    private int $targetItemId;
+    private ?int $targetUserId;
+    private ?int $targetItemId;
     private ReportType $reportType;
     private string $reasonType;
     private string $description;
     private ReportStatus $reportStatus;
-    private string $adminNotes;
+    private ?string $adminNotes;
     private DateTimeImmutable $createdAt;
 
-    public function __construct(int $reporterId, int $targetUserId, int $targetItemId, ReportType $reportType, string $reasonType, string $description, ReportStatus $reportStatus, string $adminNotes)
+    public function __construct(?int $reportId, int $reporterId, ?int $targetUserId, 
+                                ?int $targetItemId, ReportType $reportType, string $reasonType, 
+                                string $description, ReportStatus $reportStatus, 
+                                string $adminNotes, DateTimeImmutable $createdAt)
     {
+        $this->reportId = $reportId;
         $this->reporterId = $reporterId;
         $this->targetUserId = $targetUserId;
         $this->targetItemId = $targetItemId;
@@ -41,9 +45,26 @@ class Report
         $this->description = $description;
         $this->reportStatus = $reportStatus;
         $this->adminNotes = $adminNotes;
-        $this->createdAt = new DateTimeImmutable();
+        $this->createdAt = $createdAt;
     }
 
+
+
+    public static function fromArray(array $report) : self 
+    {
+        return new self(
+            (int)$report['report_id'], 
+            (int)$report['reporter_id'], 
+            isset($report['target_user_id']) ? (int) $report['target_user_id'] : null, 
+            isset($report['target_item_id']) ? (int) $report['target_item_id'] : null, 
+            ReportType::from($report['report_type']), 
+            $report['reason_type'], 
+            $report['description'], 
+            ReportStatus::from($report['report_status']), 
+            $report['admin_notes'] ?? null, 
+            new DateTimeImmutable($report['created_at'])
+        );
+    }
     
 
 
@@ -51,7 +72,7 @@ class Report
     /**
      * Get the value of reportId
      */
-    public function getReportId() : int
+    public function getReportId() : ?int
     {
         return $this->reportId;
     }
@@ -87,7 +108,7 @@ class Report
     /**
      * Get the value of targetUserId
      */
-    public function getTargetUserId() : int
+    public function getTargetUserId() : ?int
     {
         return $this->targetUserId;
     }
@@ -105,7 +126,7 @@ class Report
     /**
      * Get the value of targetItemId
      */
-    public function getTargetItemId() : int
+    public function getTargetItemId() : ?int
     {
         return $this->targetItemId;
     }
@@ -195,7 +216,7 @@ class Report
     /**
      * Get the value of adminNotes
      */
-    public function getAdminNotes() : string
+    public function getAdminNotes() : ?string
     {
         return $this->adminNotes;
     }

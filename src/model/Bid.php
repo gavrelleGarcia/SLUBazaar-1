@@ -37,7 +37,7 @@ class Bid
     /**
      * Get the value of bidId
      */
-    public function getBidId(): int
+    public function getBidId(): ?int
     {
         return $this->bidId;
     }

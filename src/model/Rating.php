@@ -4,22 +4,39 @@ declare(strict_types=1);
 
 class Rating 
 {
-    private int $ratingId;
+    private ?int $ratingId;
     private int $itemId;
     private int $raterId;
     private int $rateeId;
     private int $ratingValue;
-    private string $comment;
+    private ?string $comment;
     private DateTimeImmutable $createdAt;
 
-    public function __construct(int $itemId, int $raterId, int $rateeId, int $ratingValue, string $comment) 
+    public function __construct(?int $ratingId, int $itemId, int $raterId, int $rateeId, 
+                                int $ratingValue, ?string $comment, DateTimeImmutable $createdAt) 
     {
+        $this->ratingId = $ratingId;
         $this->itemId = $itemId;
         $this->raterId = $raterId;
         $this->rateeId = $rateeId;
         $this->ratingValue = $ratingValue;
         $this->comment = $comment;
-        $this->createdAt = new DateTimeImmutable();
+        $this->createdAt = $createdAt;
+    }
+
+
+
+    public static function fromArray(array $rating) : self 
+    {
+        return new self(
+            (int)$rating['rating_id'], 
+            (int)$rating['item_id'], 
+            (int)$rating['rater_id'], 
+            (int)$rating['ratee_id'], 
+            (int)$rating['rating_value'],
+            $rating['comment'] ?? null, 
+            new DateTimeImmutable($rating['created_at'])
+        );
     }
 
 
@@ -28,7 +45,7 @@ class Rating
     /**
      * Get the value of ratingId
      */
-    public function getRatingId(): int
+    public function getRatingId(): ?int
     {
         return $this->ratingId;
     }
@@ -118,7 +135,7 @@ class Rating
     /**
      * Get the value of comment
      */
-    public function getComment(): string
+    public function getComment(): ?string
     {
         return $this->comment;
     }

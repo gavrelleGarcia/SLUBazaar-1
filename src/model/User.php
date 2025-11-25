@@ -11,32 +11,51 @@ enum AccountStatus : string
 
 class User 
 {
-    private int $userId;
+    private ?int $userId;
     private string $firstName;
     private string $lastName;
     private string $email;
     private bool $emailVerified;
     private string $passwordHash;
     private DateTimeImmutable $createdAt;
-    private float $averageRating;
+    private ?float $averageRating;
     private AccountStatus $accountStatus;
 
-    public function __construct(string $firstName, string $lastName, string $email, bool $emailVerified, 
-                                string $passwordHash, DateTimeImmutable $createdAt, float $averageRating, 
-                                AccountStatus $accountStatus) 
+    public function __construct(?int $userId, string $firstName, string $lastName, 
+                                string $email, bool $emailVerified, 
+                                string $passwordHash, ?float $averageRating,
+                                DateTimeImmutable $createdAt, AccountStatus $accountStatus) 
     {
+        $this->userId = $userId;
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->email = $email;
         $this->emailVerified = $emailVerified;
         $this->passwordHash = $passwordHash;
-        $this->createdAt = new DateTimeImmutable();
+        $this->createdAt = $createdAt;
         $this->averageRating = $averageRating;
         $this->accountStatus = $accountStatus;
     }
 
 
-    public function getUserId() : int 
+
+    public static function fromArray(array $user) : self
+    {
+        return new self (
+            (int) $user['user_id'], 
+            $user['fname'], 
+            $user['lname'], 
+            $user['email'], 
+            (bool)$user['email_verified'], 
+            $user['password_hash'], 
+            isset($user['average_rating']) ? (float)$user['average_rating'] : null, 
+            new DateTimeImmutable($user['created_at']), 
+            AccountStatus::from($user['account_status'])
+        );
+    }
+
+
+    public function getUserId() : ?int 
     {
         return $this->userId;
     }
@@ -119,7 +138,7 @@ class User
     }
 
 
-    public function getAverageRating() : float
+    public function getAverageRating() : ?float
     {
         return $this->averageRating;
     }
