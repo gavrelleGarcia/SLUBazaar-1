@@ -9,9 +9,8 @@ class Message
     private bool $isSeller;
     private DateTimeImmutable $createdAt;
 
-    public function _construct(int $messageId, int $conversationId, string $messageText, bool $isSeller)
+    public function __construct(int $conversationId, string $messageText, bool $isSeller)
     {
-        $this->messageId = $messageId;
         $this->conversationId = $conversationId;
         $this->messageText = $messageText;
         $this->isSeller = $isSeller;

@@ -21,17 +21,16 @@ class User
     private float $averageRating;
     private AccountStatus $accountStatus;
 
-    public function _construct(int $userId, string $firstName, string $lastName, string $email, bool $emailVerified, 
+    public function __construct(string $firstName, string $lastName, string $email, bool $emailVerified, 
                                 string $passwordHash, DateTimeImmutable $createdAt, float $averageRating, 
                                 AccountStatus $accountStatus) 
     {
-        $this->userId = $userId;
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->email = $email;
         $this->emailVerified = $emailVerified;
         $this->passwordHash = $passwordHash;
-        $this->createdAt = $createdAt;
+        $this->createdAt = new DateTimeImmutable();
         $this->averageRating = $averageRating;
         $this->accountStatus = $accountStatus;
     }

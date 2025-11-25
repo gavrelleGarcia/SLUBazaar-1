@@ -8,14 +8,11 @@ class Watchlist
     private int $userId;
     private int $itemId;
 
-    public function __construct(int $watchlistId, int $userId, int $itemId)
+    public function __construct(int $userId, int $itemId)
     {
-        $this->watchlistId = $watchlistId;
         $this->userId = $userId;
         $this->itemId = $itemId;
     }
-
-
 
 
 

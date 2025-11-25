@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 enum Status : string
 {
-    case Active = 'Active';
+    case Open = 'Open';
     case Archived = 'Archived';
 }
 
@@ -18,9 +18,8 @@ class Conversation
     private Status $status;
 
 
-    public function _construct(int $conversationId, int $itemId, int $buyerId, int $sellerId, Status $status) 
+    public function __construct(int $itemId, int $buyerId, int $sellerId, Status $status) 
     {
-        $this->conversationId = $conversationId;
         $this->itemId = $itemId;
         $this->buyerId = $buyerId;
         $this->sellerId = $sellerId;

@@ -12,14 +12,14 @@ class Rating
     private string $comment;
     private DateTimeImmutable $createdAt;
 
-    public function _construct(int $ratingId, int $itemId, int $raterId, int $rateeId, int $ratingValue, string $comment) 
+    public function __construct(int $itemId, int $raterId, int $rateeId, int $ratingValue, string $comment) 
     {
-        $this->ratingId = $ratingId;
         $this->itemId = $itemId;
         $this->raterId = $raterId;
         $this->rateeId = $rateeId;
         $this->ratingValue = $ratingValue;
         $this->comment = $comment;
+        $this->createdAt = new DateTimeImmutable();
     }
 
 

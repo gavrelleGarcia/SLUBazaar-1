@@ -4,19 +4,31 @@ declare(strict_types=1);
 
 class Bid 
 {
-    private int $bidId;
+    private ?int $bidId;
     private int $itemId;
     private int $bidderId;
     private float $bidAmount;
-    private DateTimeImmutable $bidTimeStamp;
+    private DateTimeImmutable $bidTimestamp;
 
-    public function __construct(int $bidId, int $itemId, int $bidderId, float $bidAmount, DateTimeImmutable $bidTimeStamp)
+    public function __construct(?int $bidId, int $itemId, int $bidderId, float $bidAmount)
     {
         $this->bidId = $bidId;
         $this->itemId = $itemId;
         $this->bidderId = $bidderId;
         $this->bidAmount = $bidAmount;
-        $this->bidTimeStamp = $bidTimeStamp;
+        $this->bidTimestamp = new DateTimeImmutable();
+    }
+
+
+    public static function fromArray(array $bid) : self
+    {
+        return new self(
+            (int)$bid['bid_id'], 
+            (int)$bid['item_id'], 
+            (int)$bid['bidder_id'], 
+            (float)$bid['bid_amount'], 
+            new DateTimeImmutable ($bid['bid_timestamp'])
+        );
     }
 
 
@@ -99,7 +111,7 @@ class Bid
      */
     public function getBidTimeStamp(): DateTimeImmutable
     {
-        return $this->bidTimeStamp;
+        return $this->bidTimestamp;
     }
 
     /**
@@ -107,7 +119,7 @@ class Bid
      */
     public function setBidTimeStamp(DateTimeImmutable $bidTimeStamp): self
     {
-        $this->bidTimeStamp = $bidTimeStamp;
+        $this->bidTimestamp = $bidTimeStamp;
 
         return $this;
     }

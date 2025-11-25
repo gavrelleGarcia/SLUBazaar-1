@@ -9,14 +9,15 @@ class Notification
     private string $notifTitle;
     private string $content;
     private string $notifType;
+    private DateTimeImmutable $notifTime;
 
-    public function _construct(int $notifId, int $userId, string $notifTitle, string $content, string $notifType) 
+    public function __construct(int $userId, string $notifTitle, string $content, string $notifType) 
     {
-        $this->notifId = $notifId;
         $this->userId = $userId;
         $this->notifTitle = $notifTitle;
         $this->content = $content;
-        $this-> notifType = $notifType;
+        $this->notifType = $notifType;
+        $this->notifTime = new DateTimeImmutable();
     }
 
 
@@ -84,7 +85,23 @@ class Notification
         return $this;
     }
 
-    
 
 
+    /**
+     * Get the value of notifTime
+     */
+    public function getNotifTime(): DateTimeImmutable
+    {
+        return $this->notifTime;
+    }
+
+    /**
+     * Set the value of notifTime
+     */
+    public function setNotifTime(DateTimeImmutable $notifTime): self
+    {
+        $this->notifTime = $notifTime;
+
+        return $this;
+    }
 }

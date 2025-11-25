@@ -2,22 +2,37 @@
 
 declare(strict_types=1);
 
+
+enum ReportType : string 
+{
+    case User = 'User';
+    case Item = 'Item';
+}
+
+
+enum ReportStatus : string 
+{
+    case Pending = 'Pending';
+    case InReview = 'In Review';
+    case Resolved = 'Resolved';
+    case Dismissed = 'Dismissed';
+}
+
 class Report 
 {
-    protected $reportId;
-    protected $reporterId;
-    protected $targetUserId;
-    protected $targetItemId;
-    protected $reportType;
-    protected $reasonType;
-    protected $description;
-    protected $reportStatus;
-    protected $adminNotes;
-    protected $createdAt;
+    private int $reportId;
+    private int $reporterId;
+    private int $targetUserId;
+    private int $targetItemId;
+    private ReportType $reportType;
+    private string $reasonType;
+    private string $description;
+    private ReportStatus $reportStatus;
+    private string $adminNotes;
+    private DateTimeImmutable $createdAt;
 
-    public function __construct($reportId, $reporterId, $targetUserId, $targetItemId, $reportType, $reasonType, $description, $reportStatus, $adminNotes, $createdAt)
+    public function __construct(int $reporterId, int $targetUserId, int $targetItemId, ReportType $reportType, string $reasonType, string $description, ReportStatus $reportStatus, string $adminNotes)
     {
-        $this->reportId = $reportId;
         $this->reporterId = $reporterId;
         $this->targetUserId = $targetUserId;
         $this->targetItemId = $targetItemId;
@@ -26,7 +41,7 @@ class Report
         $this->description = $description;
         $this->reportStatus = $reportStatus;
         $this->adminNotes = $adminNotes;
-        $this->createdAt = $createdAt;
+        $this->createdAt = new DateTimeImmutable();
     }
 
     
@@ -36,7 +51,7 @@ class Report
     /**
      * Get the value of reportId
      */
-    public function getReportId()
+    public function getReportId() : int
     {
         return $this->reportId;
     }
@@ -54,7 +69,7 @@ class Report
     /**
      * Get the value of reporterId
      */
-    public function getReporterId()
+    public function getReporterId() : int
     {
         return $this->reporterId;
     }
@@ -72,7 +87,7 @@ class Report
     /**
      * Get the value of targetUserId
      */
-    public function getTargetUserId()
+    public function getTargetUserId() : int
     {
         return $this->targetUserId;
     }
@@ -90,7 +105,7 @@ class Report
     /**
      * Get the value of targetItemId
      */
-    public function getTargetItemId()
+    public function getTargetItemId() : int
     {
         return $this->targetItemId;
     }
@@ -108,7 +123,7 @@ class Report
     /**
      * Get the value of reportType
      */
-    public function getReportType()
+    public function getReportType() : ReportType
     {
         return $this->reportType;
     }
@@ -126,7 +141,7 @@ class Report
     /**
      * Get the value of reasonType
      */
-    public function getReasonType()
+    public function getReasonType() : string
     {
         return $this->reasonType;
     }
@@ -144,7 +159,7 @@ class Report
     /**
      * Get the value of description
      */
-    public function getDescription()
+    public function getDescription() : string
     {
         return $this->description;
     }
@@ -162,7 +177,7 @@ class Report
     /**
      * Get the value of reportStatus
      */
-    public function getReportStatus()
+    public function getReportStatus() : ReportStatus
     {
         return $this->reportStatus;
     }
@@ -180,7 +195,7 @@ class Report
     /**
      * Get the value of adminNotes
      */
-    public function getAdminNotes()
+    public function getAdminNotes() : string
     {
         return $this->adminNotes;
     }
@@ -198,7 +213,7 @@ class Report
     /**
      * Get the value of createdAt
      */
-    public function getCreatedAt()
+    public function getCreatedAt() : DateTimeImmutable
     {
         return $this->createdAt;
     }
