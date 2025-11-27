@@ -29,7 +29,7 @@ class UserRepository
         $lname = $user->getLastName();
         $email = $user->getEmail();
         $passwordHash = $user->getPasswordHash();
-        $createdAt = $user->getCreatedAt();
+        $createdAt = $user->getCreatedAt()->format('Y-m-d H:i:s');
         $statement->bind_param('sssss', $fname, $lname, $email, $passwordHash, $createdAt);
 
         if (!$statement->execute())
