@@ -17,6 +17,32 @@ class BidRepository
 
 
 
+
+    public function placeBid(Bid $bid) : void
+    {
+        $query = "INSERT INTO bid (item_id, bidder_id, bid_amount) VALUES (?, ?, ?)";
+        $statement = $this->db->prepare($query);
+
+        if (!$statement)
+            throw new Exception("There was a problem preparing the placebid query: " . $this->db->error);
+
+        $itemId = $bid->getItemId();
+        $bidderId = $bid->getBidderId();
+        $bidAmount = $bid->getBidAmount();
+        $statement->bind_param('iid', $itemId, $bidderId, $bidAmount);
+
+        if (!$statement->execute())
+            throw new Exception("Failed to place bid: " . $statement->error);
+
+        $bidId = $this->db->insert_id;
+        $bid->setBidId($bidId);
+
+        $statement->close();
+    }
+    
+
+
+
     public function getBidsByUserId(int $userId) : array
     {
         $query = "SELECT * FROM bid WHERE `bidder_id` = ?";
@@ -95,29 +121,6 @@ class BidRepository
             $activeBids[] = Bid::fromArray($row);
 
         return $activeBids;
-    }
-
-
-    public function placeBid(Bid $bid) : void
-    {
-        $query = "INSERT INTO bid (item_id, bidder_id, bid_amount) VALUES (?, ?, ?)";
-        $statement = $this->db->prepare($query);
-
-        if (!$statement)
-            throw new Exception("There was a problem preparing the placebid query: " . $this->db->error);
-
-        $itemId = $bid->getItemId();
-        $bidderId = $bid->getBidderId();
-        $bidAmount = $bid->getBidAmount();
-        $statement->bind_param('iid', $itemId, $bidderId, $bidAmount);
-
-        if (!$statement->execute())
-            throw new Exception("Failed to place bid: " . $statement->error);
-
-        $bidId = $this->db->insert_id;
-        $bid->setBidId($bidId);
-
-        $statement->close();
     }
 
 
