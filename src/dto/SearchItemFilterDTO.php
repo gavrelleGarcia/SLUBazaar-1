@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class SearchItemFilter 
+class SearchItemFilterDTO
 {
     public ?string $searchWord;
     public array $category; // either Electronics, Others, etc 2 or 3 or 4 or all

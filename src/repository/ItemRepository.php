@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 require_once '../model/Item.php';
-require_once '../dto/SearchItemFilter.php';
+require_once '../dto/SearchItemFilterDTO.php';
 
 class ItemRepository 
 {
@@ -101,7 +101,7 @@ class ItemRepository
 
 
 
-    public function search(SearchItemFilter $criteria) : array
+    public function search(SearchItemFilterDTO $criteria) : array
     {
         $sql = "SELECT item.* 
                 FROM item 
@@ -191,7 +191,7 @@ class ItemRepository
     }
 
 
-    private function applyKeywordFilter(string &$sql, array &$params, string &$types, SearchItemFilter $criteria)
+    private function applyKeywordFilter(string &$sql, array &$params, string &$types, SearchItemFilterDTO $criteria)
     {
         if (empty($criteria->searchWord)) return;
 
@@ -202,7 +202,7 @@ class ItemRepository
         $types .= "ss";
     }
 
-    private function applyCategoryFilter(string &$sql, array &$params, string &$types, SearchItemFilter $criteria)
+    private function applyCategoryFilter(string &$sql, array &$params, string &$types, SearchItemFilterDTO $criteria)
     {
         if (empty($criteria->category)) return;
 
@@ -215,7 +215,7 @@ class ItemRepository
     }
 
 
-    private function applyStatusFilter(string &$sql, array &$params, string &$types, SearchItemFilter $criteria)
+    private function applyStatusFilter(string &$sql, array &$params, string &$types, SearchItemFilterDTO $criteria)
     {
         if (empty($criteria->statuses)) return;
 
@@ -229,7 +229,7 @@ class ItemRepository
     }
 
 
-    private function applyPriceFilter(string &$sql, array &$params, string &$types, SearchItemFilter $criteria)
+    private function applyPriceFilter(string &$sql, array &$params, string &$types, SearchItemFilterDTO $criteria)
     {
         if ($criteria->minPrice !== null) {
             $sql .= " AND item.current_bid >= ?";
@@ -245,7 +245,7 @@ class ItemRepository
     }
 
 
-    private function sort(string &$sql, SearchItemFilter $criteria)
+    private function sort(string &$sql, SearchItemFilterDTO $criteria)
     {
         $order = match($criteria->sortBy) {
             "newest" => " ORDER BY item.created_at DESC",

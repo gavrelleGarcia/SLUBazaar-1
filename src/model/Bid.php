@@ -10,13 +10,14 @@ class Bid
     private float $bidAmount;
     private DateTimeImmutable $bidTimestamp;
 
-    public function __construct(?int $bidId, int $itemId, int $bidderId, float $bidAmount)
+    public function __construct(?int $bidId, int $itemId, int $bidderId, 
+                                float $bidAmount, DateTimeImmutable $bidTimestamp)
     {
         $this->bidId = $bidId;
         $this->itemId = $itemId;
         $this->bidderId = $bidderId;
         $this->bidAmount = $bidAmount;
-        $this->bidTimestamp = new DateTimeImmutable();
+        $this->bidTimestamp = $bidTimestamp;
     }
 
 

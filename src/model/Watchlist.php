@@ -43,7 +43,7 @@ class Watchlist
     /**
      * Set the value of watchlistId
      */
-    public function setWatchlistId(?int $watchlistId): self
+    public function setWatchlistId(int $watchlistId): self
     {
         $this->watchlistId = $watchlistId;
 

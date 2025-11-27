@@ -18,7 +18,7 @@ class BidRepository
 
 
 
-    public function placeBid(Bid $bid) : void
+    public function addBid(Bid $bid) : void
     {
         $query = "INSERT INTO bid (item_id, bidder_id, bid_amount) VALUES (?, ?, ?)";
         $statement = $this->db->prepare($query);
