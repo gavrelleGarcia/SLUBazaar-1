@@ -45,6 +45,7 @@ class ItemRepository
         if (!$statement->execute())
             throw new Exception("Failed to add item " . $statement->error);
 
+        $item->setItemId($this->db->insert_id);
         $statement->close();
     }
 
