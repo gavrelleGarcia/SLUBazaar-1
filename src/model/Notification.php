@@ -43,7 +43,7 @@ class Notification
     }
 
 
-    public function setNotifId(int $notifId) : self
+    public function setNotifId(?int $notifId) : self
     {
         $this->notifId = $notifId;
         return $this;

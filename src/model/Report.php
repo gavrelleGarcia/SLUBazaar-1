@@ -80,7 +80,7 @@ class Report
     /**
      * Set the value of reportId
      */
-    public function setReportId($reportId): self
+    public function setReportId(?int $reportId): self
     {
         $this->reportId = $reportId;
 
@@ -98,7 +98,7 @@ class Report
     /**
      * Set the value of reporterId
      */
-    public function setReporterId($reporterId): self
+    public function setReporterId(int $reporterId): self
     {
         $this->reporterId = $reporterId;
 
@@ -116,7 +116,7 @@ class Report
     /**
      * Set the value of targetUserId
      */
-    public function setTargetUserId($targetUserId): self
+    public function setTargetUserId(?int $targetUserId): self
     {
         $this->targetUserId = $targetUserId;
 
@@ -134,7 +134,7 @@ class Report
     /**
      * Set the value of targetItemId
      */
-    public function setTargetItemId($targetItemId): self
+    public function setTargetItemId(?int $targetItemId): self
     {
         $this->targetItemId = $targetItemId;
 
@@ -152,7 +152,7 @@ class Report
     /**
      * Set the value of reportType
      */
-    public function setReportType($reportType): self
+    public function setReportType(ReportType $reportType): self
     {
         $this->reportType = $reportType;
 
@@ -170,7 +170,7 @@ class Report
     /**
      * Set the value of reasonType
      */
-    public function setReasonType($reasonType): self
+    public function setReasonType(string $reasonType): self
     {
         $this->reasonType = $reasonType;
 
@@ -188,7 +188,7 @@ class Report
     /**
      * Set the value of description
      */
-    public function setDescription($description): self
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
@@ -206,7 +206,7 @@ class Report
     /**
      * Set the value of reportStatus
      */
-    public function setReportStatus($reportStatus): self
+    public function setReportStatus(ReportStatus $reportStatus): self
     {
         $this->reportStatus = $reportStatus;
 
@@ -224,7 +224,7 @@ class Report
     /**
      * Set the value of adminNotes
      */
-    public function setAdminNotes($adminNotes): self
+    public function setAdminNotes(?string $adminNotes): self
     {
         $this->adminNotes = $adminNotes;
 
@@ -242,7 +242,7 @@ class Report
     /**
      * Set the value of createdAt
      */
-    public function setCreatedAt($createdAt): self
+    public function setCreatedAt(DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
 

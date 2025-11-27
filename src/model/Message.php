@@ -44,7 +44,7 @@ class Message
     /**
      * Set the value of messageId
      */
-    public function setMessageId(int $messageId): self
+    public function setMessageId(?int $messageId): self
     {
         $this->messageId = $messageId;
 

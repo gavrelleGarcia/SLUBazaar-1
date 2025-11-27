@@ -60,7 +60,7 @@ class User
         return $this->userId;
     }
 
-    public function setUserId(int $userId) : self
+    public function setUserId(?int $userId) : self
     {
         $this->userId = $userId;
         return $this;
@@ -144,7 +144,7 @@ class User
     }
 
 
-    public function setAverageRating(float $averageRating) : self 
+    public function setAverageRating(?float $averageRating) : self 
     {
         $this->averageRating = $averageRating;
         return $this;

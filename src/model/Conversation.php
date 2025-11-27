@@ -48,7 +48,7 @@ class Conversation
     }
 
 
-    public function setConversationId(int $conversationId) : self 
+    public function setConversationId(?int $conversationId) : self 
     {
         $this->conversationId = $conversationId;
         return $this;

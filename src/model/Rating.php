@@ -143,7 +143,7 @@ class Rating
     /**
      * Set the value of comment
      */
-    public function setComment(string $comment): self
+    public function setComment(?string $comment): self
     {
         $this->comment = $comment;
 

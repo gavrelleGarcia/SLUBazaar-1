@@ -99,7 +99,7 @@ class Item
     /**
      * Set the value of itemId
      */
-    public function setItemId(int $itemId): self
+    public function setItemId(?int $itemId): self
     {
         $this->itemId = $itemId;
 
@@ -261,7 +261,7 @@ class Item
     /**
      * Set the value of meetUpCode
      */
-    public function setMeetUpCode(string $meetUpCode): self
+    public function setMeetUpCode(?string $meetUpCode): self
     {
         $this->meetUpCode = $meetUpCode;
 

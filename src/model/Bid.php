@@ -45,7 +45,7 @@ class Bid
     /**
      * Set the value of bidId
      */
-    public function setBidId(int $bidId): self
+    public function setBidId(?int $bidId): self
     {
         $this->bidId = $bidId;
 
