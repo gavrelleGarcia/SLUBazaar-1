@@ -16,7 +16,8 @@ class MessageRepository
 
     public function addMessage(Message $message) : void 
     {
-        $query = "INSERT INTO message (conversation_id, message_text, is_seller, created_at) values (?, ?, ?, ?)";
+        $query = "INSERT INTO message (conversation_id, message_text, is_seller, created_at) 
+                    values (?, ?, ?, ?)";
         $statement = $this->db->prepare($query);
 
         if (!$statement)
@@ -38,8 +39,28 @@ class MessageRepository
 
 
 
-    public function getMessagesByConversationId(int $conversationId)
+    public function getMessagesByConversationId(int $conversationId) : array
     {
-        
+        $query = "SELECT * FROM message WHERE conversation_id = ?";
+        $statement = $this->db->prepare($query);
+
+        if (!$statement)
+            throw new Exception("There was an erorr in preparing the getMessagesByConversationId 
+                                query: " . $this->db->error);
+
+        $statement->bind_param('i', $conversationId);
+
+        if(!$statement->execute())
+            throw new Exception("Failed to getMessageByConversationId : " . $statement->error);
+
+        $result = $statement->get_result();
+        $rows = $result->fetch_all(MYSQLI_ASSOC);
+        $statement->close();
+
+        $messages = [];
+        foreach ($rows as $row)
+            $messages[] = Message::fromArray($row);
+
+        return $messages;
     }
 }
