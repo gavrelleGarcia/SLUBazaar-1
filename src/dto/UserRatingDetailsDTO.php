@@ -1,20 +1,20 @@
 <?php
 declare(strict_types=1);
 
-class RatingDetailsDTO implements JsonSerializable
+class UserRatingDetailsDTO implements JsonSerializable
 {
     public function __construct(
-        public int $ratingValue,
-        public ?string $comment,
-        public string $date,
+        public readonly int $ratingValue,
+        public readonly ?string $comment,
+        public readonly string $date,
 
         // Item Details
-        public int $itemId,
-        public string $itemTitle,
-        public float $itemPrice, // The final sold price
+        public readonly int $itemId,
+        public readonly string $itemTitle,
+        public readonly float $itemPrice, // The final sold price
 
         // The "Other Person": Rater who rate you or Ratee who did you rate 
-        public string $otherUserName
+        public readonly string $otherUserName
     ) {}
 
     
@@ -36,7 +36,7 @@ class RatingDetailsDTO implements JsonSerializable
 
     public static function fromArray(array $data) : self
     {
-        return new RatingDetailsDTO(
+        return new UserRatingDetailsDTO(
                 (int)$data['rating_value'],
                 $data['comment'] ?? null,
                 (new DateTimeImmutable($data['created_at']))->format('M d, Y'),

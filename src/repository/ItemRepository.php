@@ -100,7 +100,7 @@ class ItemRepository
     }
 
 
-
+    // FIX : make it return with item title, photo, current bid price, and auction end
     public function search(SearchItemFilterDTO $criteria) : array
     {
         $sql = "SELECT item.* 

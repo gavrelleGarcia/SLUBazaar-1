@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 class SearchItemFilterDTO
 {
-    public ?string $searchWord;
-    public array $category; // either Electronics, Others, etc 2 or 3 or 4 or all
-    public array $statuses; // either pending or active or allshi
-    public string $sortBy;
-    public ?float $minPrice;
-    public ?float $maxPrice;
+    public readonly ?string $searchWord;
+    public readonly array $category; // either Electronics, Others, etc 2 or 3 or 4 or all
+    public readonly array $statuses; // either pending or active or allshi
+    public readonly string $sortBy;
+    public readonly ?float $minPrice;
+    public readonly ?float $maxPrice;
     // TODO : add a page in the marketplace
 
 
