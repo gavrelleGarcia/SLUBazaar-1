@@ -44,6 +44,7 @@ class Item
     private ItemStatus $itemStatus;
     private ?string $meetUpCode;
     private Category $category;
+    private ?DateTimeImmutable $dateSold;
 
     public function __construct(?int $itemId, int $sellerId, string $title, string $description, 
                                 float $startingBid, float $currentBid, DateTimeImmutable $createdAt, 

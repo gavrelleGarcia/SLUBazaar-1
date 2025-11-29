@@ -1,21 +1,53 @@
+// {
+//     "editor.quickSuggestions": {
+//         "other": "off"
+//     },
+//     "editor.inlineSuggest.suppressSuggestions": true,
+//     "editor.snippetSuggestions": "none",
+//     "editor.suggest.snippetsPreventQuickSuggestions": true,
+//     "editor.wordBasedSuggestions": "off",
+//     "editor.inlineSuggest.enabled": false,
+//     "editor.inlineSuggest.edits.renderSideBySide": "never",
+//     "editor.acceptSuggestionOnEnter": "off",
+//     "editor.suggest.showClasses": false,
+//     "editor.suggest.showColors": false,
+//     "editor.suggest.showConstants": false,
+//     "editor.suggest.showConstructors": false,
+//     "editor.suggest.showCustomcolors": false,
+//     "editor.suggest.showDeprecated": false,
+//     "editor.suggest.showMethods": false,
+//     "phpGetterSetter.redirect": true,
+//     "phpGetterSetter.short": true,
+//     "phpGettersSetters.generatePHPDoc": true,
+//     "phpGettersSetters.templatesDir": "",
+//     "intelephense.environment.phpVersion": "8.2.0"
+// }
+
+
 {
+    // --- INTELLIJ BEHAVIOR FIXES ---
+    "editor.suggestSelection": "first",             // Always highlight the top result (No arrow key needed)
+    "editor.acceptSuggestionOnEnter": "on",         // Enter key accepts the suggestion
     "editor.quickSuggestions": {
-        "other": "off"
+        "other": "on",
+        "comments": "off",
+        "strings": "off"
     },
-    "editor.inlineSuggest.suppressSuggestions": true,
-    "editor.snippetSuggestions": "none",
-    "editor.suggest.snippetsPreventQuickSuggestions": true,
-    "editor.wordBasedSuggestions": "off",
-    "editor.inlineSuggest.enabled": false,
-    "editor.inlineSuggest.edits.renderSideBySide": "never",
-    "editor.acceptSuggestionOnEnter": "off",
-    "editor.suggest.showClasses": false,
-    "editor.suggest.showColors": false,
-    "editor.suggest.showConstants": false,
-    "editor.suggest.showConstructors": false,
-    "editor.suggest.showCustomcolors": false,
-    "editor.suggest.showDeprecated": false,
-    "editor.suggest.showMethods": false,
+    "editor.tabCompletion": "on",                   // Tab key accepts suggestion
+
+    // --- RE-ENABLING WHAT WAS HIDDEN ---
+    "editor.suggest.showClasses": true,
+    "editor.suggest.showMethods": true,
+    "editor.suggest.showConstants": true,
+    "editor.suggest.showConstructors": true,
+    "editor.suggest.showFields": true,
+    "editor.suggest.showVariables": true,
+    
+    // --- CLEANUP ---
+    "editor.snippetSuggestions": "bottom",          // Put snippets at the bottom so they don't block real code
+    "editor.wordBasedSuggestions": "off",           // Keep this off (Good choice, reduces noise)
+
+    // --- YOUR EXISTING PHP SETTINGS ---
     "phpGetterSetter.redirect": true,
     "phpGetterSetter.short": true,
     "phpGettersSetters.generatePHPDoc": true,

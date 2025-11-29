@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once '../model/Item.php';
 require_once '../dto/SearchItemFilterDTO.php';
+require_once '../dto/ItemSummaryDTO.php';
 
 class ItemRepository 
 {
@@ -75,6 +76,71 @@ class ItemRepository
 
 
 
+    public function getActiveItemsByUserId(int $userId) : array
+    {
+        $query = "
+            SELECT 
+                i.item_id, i.title, i.item_status,
+                i.starting_bid, i.current_bid,
+                i.auction_start, i.auction_end,
+                (SELECT COUNT(*) FROM bid WHERE item_id = i.item_id) as bid_count,
+                (SELECT image_url FROM item_image WHERE item_id = i.item_id LIMIT 1) as image_url
+            FROM item i
+            WHERE i.seller_id = ? 
+            AND i.item_status IN ('Active', 'Pending')
+            ORDER BY i.auction_end ASC
+        ";
+        $statement = $this->db->prepare($query);
+
+        if (!$statement)
+            throw new Exception("There was a problem in preparing the getActiveItemsByUserId query : " 
+                                . $this->db->error);
+        $statement->bind_param('i', $userId);
+
+        if (!$statement->execute())
+            throw new Exception("Failed to getActiveItemsByUserID : " . $statement->error);
+
+        $result = $statement->get_result();
+        $rows = $result->fetch_all(MYSQLI_ASSOC);
+        $statement->close();
+
+        $activeItems = [];
+        foreach($rows as $row)
+            $activeItems[] = ItemSummaryDTO::fromArray($row);
+
+        return $activeItems;
+    }
+
+
+    public function getSoldItemsByUserId(int $userid) : array
+    {
+        $query = "SELECT * FROM item WHERE seller_id = ? AND "
+    }
+
+
+    public function addDateSold(int $itemId, DateTimeImmutable $dateSold) : void    
+    {
+        $query = "UPDATE item SET date_sold = ? WHERE item_id = ?";
+        $statement = $this->db->prepare($query);
+
+        if (!$statement)
+            throw new Exception("There was an error preparing the addDateSold query :"  . $this->db->error);
+
+        $dateSoldString = $dateSold->format('Y-m-d H:i:s');
+        $statement->bind_param('si', $dateSoldString, $itemId);
+
+        if (!$statement->execute())
+            throw new Exception("Failed to add date sold to item : " . $statement->error);
+
+        $statement->close();
+    }
+
+
+
+
+
+
+    // FIX : make it return with title, photo, current bid price,and auction date only
     public function getItemsBySellerId(int $sellerId) : array
     {
         $query = "SELECT * FROM item WHERE seller_id = ?";
@@ -88,6 +154,7 @@ class ItemRepository
         if (!$statement->execute())
             throw new Exception("Failed to getItemsBySellerId : " . $statement->error);
 
+
         $result = $statement->get_result();
         $rows = $result->fetch_all(MYSQLI_ASSOC);
         $statement->close();
@@ -100,7 +167,7 @@ class ItemRepository
     }
 
 
-    // FIX : make it return with item title, photo, current bid price, and auction end
+    // FIX : make it return with title, photo current bid pricem ,and auction date only
     public function search(SearchItemFilterDTO $criteria) : array
     {
         $sql = "SELECT item.* 

@@ -9,6 +9,13 @@ enum AccountStatus : string
     case Banned = 'Banned';
 }
 
+
+enum Role : string 
+{
+    case Admin = 'Admin';
+    case Member = 'Member';
+}
+
 class User 
 {
     private ?int $userId;
@@ -20,11 +27,13 @@ class User
     private DateTimeImmutable $createdAt;
     private ?float $averageRating;
     private AccountStatus $accountStatus;
+    private Role $role;
 
     public function __construct(?int $userId, string $firstName, string $lastName, 
                                 string $email, bool $emailVerified, 
                                 string $passwordHash, ?float $averageRating,
-                                DateTimeImmutable $createdAt, AccountStatus $accountStatus) 
+                                DateTimeImmutable $createdAt, AccountStatus $accountStatus, 
+                                Role $role) 
     {
         $this->userId = $userId;
         $this->firstName = $firstName;
@@ -35,6 +44,7 @@ class User
         $this->createdAt = $createdAt;
         $this->averageRating = $averageRating;
         $this->accountStatus = $accountStatus;
+        $this->role = $role;
     }
 
 
@@ -50,7 +60,8 @@ class User
             $user['password_hash'], 
             isset($user['average_rating']) ? (float)$user['average_rating'] : null, 
             new DateTimeImmutable($user['created_at']), 
-            AccountStatus::from($user['account_status'])
+            AccountStatus::from($user['account_status']),
+            Role::from($user['role'])
         );
     }
 
@@ -159,6 +170,24 @@ class User
     public function setAccountStatus(AccountStatus $accountStatus) : self
     {
         $this->accountStatus = $accountStatus;
+        return $this;
+    }
+
+    /**
+     * Get the value of role
+     */
+    public function getRole(): Role
+    {
+        return $this->role;
+    }
+
+    /**
+     * Set the value of role
+     */
+    public function setRole(Role $role): self
+    {
+        $this->role = $role;
+
         return $this;
     }
 }
