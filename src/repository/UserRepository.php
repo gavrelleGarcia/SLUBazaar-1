@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 
 require_once '../model/User.php';
-require_once '../dto/AdminUserSummaryDTO.php';
+require_once '../dto/AdminUserTableRowDTO.php';
 
 class UserRepository 
 {
@@ -164,7 +164,7 @@ class UserRepository
 
         $users = [];
         foreach($rows as $row)
-            $users[] = AdminUserSummaryDTO::fromArray($row);
+            $users[] = AdminUserTableRowDTO::fromArray($row);
 
         return $users;
     }
@@ -190,7 +190,7 @@ class UserRepository
 
         $activeUsers = [];
         foreach($rows as $row)
-            $activeUsers[] = AdminUserSummaryDTO::fromArray($row);
+            $activeUsers[] = AdminUserTableRowDTO::fromArray($row);
 
         return $activeUsers;
     }
@@ -218,7 +218,7 @@ class UserRepository
 
         $bannedUsers = [];
         foreach($rows as $row)
-            $bannedUsers[] = AdminUserSummaryDTO::fromArray($row);
+            $bannedUsers[] = AdminUserTableRowDTO::fromArray($row);
 
         return $bannedUsers;
     }

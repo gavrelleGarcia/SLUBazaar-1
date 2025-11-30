@@ -43,9 +43,9 @@ class BidRepository
 
 
 
-    public function getBidsByUserId(int $userId) : array
+    public function getActiveBidsByUserId(int $userId) : array
     {
-        $query = "SELECT * FROM bid WHERE `bidder_id` = ?";
+        $query = $this->retrieveGetBidsByUserIdQuery();
         $statement = $this->db->prepare($query);
 
         if (!$statement) 
@@ -68,6 +68,9 @@ class BidRepository
     }
 
 
+    /**
+     * This should have a name for who bid
+     */
     public function getBidsByItemId(int $itemId) : array
     {
             $query = "SELECT * FROM bid WHERE `item_id` = ?";
@@ -93,35 +96,35 @@ class BidRepository
     }
 
 
-    public function getActiveBidsByUserId(int $userId) : array 
-    {
-        $query = "SELECT bid.* FROM bid
-                  JOIN item ON bid.item_id = item.item_id
-                  WHERE bid.bidder_id = ? 
-                  AND item.item_status IN (?, ?)
-                  ORDER BY bid.bid_timestamp DESC";
-        $statement = $this->db->prepare($query);
+    // public function getActiveBidsByUserId(int $userId) : array 
+    // {
+    //     $query = "SELECT bid.* FROM bid
+    //               JOIN item ON bid.item_id = item.item_id
+    //               WHERE bid.bidder_id = ? 
+    //               AND item.item_status IN (?, ?)
+    //               ORDER BY bid.bid_timestamp DESC";
+    //     $statement = $this->db->prepare($query);
 
-        if (!$statement) 
-            throw new Exception("There was an error preparing the getActiveBidsByUserId query : " . $this->db->error);
+    //     if (!$statement) 
+    //         throw new Exception("There was an error preparing the getActiveBidsByUserId query : " . $this->db->error);
 
-        $activeStatus = ItemStatus::Active->value;
-        $awaitingMeetupStatus = ItemStatus::AwaitingMeetup->value;
-        $statement->bind_param('iss', $userId, $activeStatus, $awaitingMeetupStatus);
+    //     $activeStatus = ItemStatus::Active->value;
+    //     $awaitingMeetupStatus = ItemStatus::AwaitingMeetup->value;
+    //     $statement->bind_param('iss', $userId, $activeStatus, $awaitingMeetupStatus);
 
-        if (!$statement->execute())
-            throw new Exception("Failed to do the getActiveBidsByUserId: " . $statement->error);
+    //     if (!$statement->execute())
+    //         throw new Exception("Failed to do the getActiveBidsByUserId: " . $statement->error);
 
-        $result = $statement->get_result();
-        $rows = $result->fetch_all(MYSQLI_ASSOC);
-        $statement->close();
+    //     $result = $statement->get_result();
+    //     $rows = $result->fetch_all(MYSQLI_ASSOC);
+    //     $statement->close();
 
-        $activeBids = [];
-        foreach($rows as $row)
-            $activeBids[] = Bid::fromArray($row);
+    //     $activeBids = [];
+    //     foreach($rows as $row)
+    //         $activeBids[] = Bid::fromArray($row);
 
-        return $activeBids;
-    }
+    //     return $activeBids;
+    // }
 
 
 
@@ -147,6 +150,36 @@ class BidRepository
         return Bid::fromArray($row);
     }
 
+
+
+
+    private function retrieveGetBidsByUserIdQuery() : string 
+    {
+        return "SELECT 
+                    MAX(b.bid_id) AS bid_id,         -- 1. bidId (Get the ID of their latest/highest bid)
+                    i.item_id,                       -- 2. itemId
+                    i.title,                         -- 3. title
+                    (
+                        SELECT image_url 
+                        FROM item_image 
+                        WHERE item_id = i.item_id 
+                        LIMIT 1
+                    ) AS image_url,                  -- 4. imageUrl
+                    i.auction_end,                   -- 5. auctionEnd
+                    MAX(b.bid_amount) AS my_bid,     -- 6. myBid (Show their HIGHEST offer, not their first)
+                    i.current_bid                    -- 7. currentBid (The actual highest price of the item)
+                FROM 
+                    bid b
+                JOIN 
+                    item i ON b.item_id = i.item_id
+                WHERE 
+                    b.bidder_id = ?                  
+                    AND i.item_status = 'Active'     -- Only show ongoing auctions
+                GROUP BY 
+                    i.item_id                        -- CRITICAL: Collapses multiple bids into one row
+                ORDER BY 
+                    i.auction_end ASC;               -- Show items ending soonest first";
+    }
 
 
     

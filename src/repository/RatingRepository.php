@@ -72,7 +72,7 @@ class RatingRepository
         $ratings = [];
 
         foreach($rows as $row)
-            $ratings[] = UserRatingDetailsDTO::fromArray($row);
+            $ratings[] = RatingCardDTO::fromArray($row);
 
         return $ratings;
     }
@@ -108,7 +108,7 @@ class RatingRepository
         $ratings = [];
 
         foreach($rows as $row)
-            $ratings[] = UserRatingDetailsDTO::fromArray($row);
+            $ratings[] = RatingCardDTO::fromArray($row);
 
         return $ratings;
     }

@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-
-class UserSoldItemSummaryDTO implements JsonSerializable
+/**
+ * The class that will be passed to Profile View (Sold Items)
+ */
+class SoldItemCardDTO implements JsonSerializable
 {
 
     public function __construct(
@@ -26,7 +28,7 @@ class UserSoldItemSummaryDTO implements JsonSerializable
             'currentBid' => $this->currentBid,
             'buyerFname' => $this->buyerFname,
             'buyerLname' => $this->buyerLname,
-            'dateSold' => $this->dateSold
+            'dateSold' => $this->dateSold->format('c')
         ];
     }
 

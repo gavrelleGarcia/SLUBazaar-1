@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class SearchItemFilterDTO
+class SearchItemsRequestDTO
 {
     public readonly ?string $searchWord;
     public readonly array $category; // either Electronics, Others, etc 2 or 3 or 4 or all

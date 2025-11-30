@@ -1,7 +1,10 @@
 <?php
 declare(strict_types=1);
 
-class UserRatingDetailsDTO implements JsonSerializable
+/**
+ * The class that will be passed to Profile View (Ratings View)
+ */
+class RatingCardDTO implements JsonSerializable
 {
     public function __construct(
         public readonly int $ratingValue,
@@ -36,7 +39,7 @@ class UserRatingDetailsDTO implements JsonSerializable
 
     public static function fromArray(array $data) : self
     {
-        return new UserRatingDetailsDTO(
+        return new RatingCardDTO(
                 (int)$data['rating_value'],
                 $data['comment'] ?? null,
                 (new DateTimeImmutable($data['created_at']))->format('M d, Y'),
