@@ -39,33 +39,88 @@ class BidRepository
 
         $statement->close();
     }
-    
 
 
 
+    public function getToClaimBidsByUserId(int $userId) : array
+    {
+        $query = $this->retrieveGetToClaimBidsByUserId();
+        $statement = $this->db->prepare($query);
+
+        if (!$statement)
+            throw new Exception("There was an error in preparing getToClaimBidsByUserId : " 
+                                . $this->db->error);
+        $statement->bind_param('i', $userId);
+
+        if (!$statement->execute())
+            throw new Exception("Failed to getToClaimBidsByUserId : " . $statement->error);
+
+        $result = $statement->get_result();
+        $rows = $result->fetch_all(MYSQLI_ASSOC);
+        $statement->close();
+
+        $toClaimBids = [];
+        foreach($rows as $row)
+            $toClaimBids[] = ClaimItemCardDTO::fromArray($row);
+
+        return $toClaimBids;
+    }
+
+
+
+    /**
+     * Gets the active bids in the profile view (Active Bids)
+     */
     public function getActiveBidsByUserId(int $userId) : array
     {
         $query = $this->retrieveGetBidsByUserIdQuery();
         $statement = $this->db->prepare($query);
 
         if (!$statement) 
-            throw new Exception("There was a problem preparing the getBidsByUserId() query: " . $this->db->error);
+            throw new Exception("There was a problem preparing the getActiveBidsByUserId() query: " 
+                                . $this->db->error);
 
         $statement->bind_param('i', $userId);
 
         if (!$statement->execute())
-            throw new Exception("getBidsByUserId has an error: " . $statement->error);
+            throw new Exception("getActiveBidsByUserId has an error: " . $statement->error);
 
         $results = $statement->get_result();
         $rows = $results->fetch_all(MYSQLI_ASSOC);
         $statement->close();
 
-        $bidsOfUser = [];
+        $activeBidsOfUser = [];
         foreach ($rows as $row) 
-            $bidsOfUser[] = Bid::fromArray($row); 
+            $activeBidsOfUser[] = BidRowDTO::fromArray($row); 
         
-        return $bidsOfUser;
+        return $activeBidsOfUser;
     }
+
+
+    public function getPastBidsByUserId(int $userId) : array
+    {
+        $query = $this->retrieveGetPastBidsByUserId();
+        $statement = $this->db->prepare($query);
+
+        if (!$statement)
+            throw new Exception("There was an error in preparing getPastBidsByUserId : " 
+                                . $this->db->error);
+        $statement->bind_param('ii', $userId, $userId);
+
+        if (!$statement->execute())
+            throw new Exception("Failed to getPastBidsByUserId : {$statement->error}");
+
+        $result = $statement->get_result();
+        $rows = $result->fetch_all(MYSQLI_ASSOC);
+        $statement->close();
+
+        $pastBids = [];
+        foreach($rows as $row)
+            $pastBids[] = HistoryItemCardDTO::fromArray($row, $userId);
+
+        return $pastBids;
+    }
+
 
 
     /**
@@ -94,37 +149,6 @@ class BidRepository
 
             return $bidsOfItem;
     }
-
-
-    // public function getActiveBidsByUserId(int $userId) : array 
-    // {
-    //     $query = "SELECT bid.* FROM bid
-    //               JOIN item ON bid.item_id = item.item_id
-    //               WHERE bid.bidder_id = ? 
-    //               AND item.item_status IN (?, ?)
-    //               ORDER BY bid.bid_timestamp DESC";
-    //     $statement = $this->db->prepare($query);
-
-    //     if (!$statement) 
-    //         throw new Exception("There was an error preparing the getActiveBidsByUserId query : " . $this->db->error);
-
-    //     $activeStatus = ItemStatus::Active->value;
-    //     $awaitingMeetupStatus = ItemStatus::AwaitingMeetup->value;
-    //     $statement->bind_param('iss', $userId, $activeStatus, $awaitingMeetupStatus);
-
-    //     if (!$statement->execute())
-    //         throw new Exception("Failed to do the getActiveBidsByUserId: " . $statement->error);
-
-    //     $result = $statement->get_result();
-    //     $rows = $result->fetch_all(MYSQLI_ASSOC);
-    //     $statement->close();
-
-    //     $activeBids = [];
-    //     foreach($rows as $row)
-    //         $activeBids[] = Bid::fromArray($row);
-
-    //     return $activeBids;
-    // }
 
 
 
@@ -156,7 +180,6 @@ class BidRepository
     private function retrieveGetBidsByUserIdQuery() : string 
     {
         return "SELECT 
-                    MAX(b.bid_id) AS bid_id,         -- 1. bidId (Get the ID of their latest/highest bid)
                     i.item_id,                       -- 2. itemId
                     i.title,                         -- 3. title
                     (
@@ -179,6 +202,71 @@ class BidRepository
                     i.item_id                        -- CRITICAL: Collapses multiple bids into one row
                 ORDER BY 
                     i.auction_end ASC;               -- Show items ending soonest first";
+    }
+
+
+    private function retrieveGetToClaimBidsByUserId() : string 
+    {
+        return "SELECT 
+                    i.item_id,
+                    i.title,
+                    i.current_bid,  -- Maps to currentBid (Final Price)
+                    i.seller_id,    -- Maps to sellerId
+                    i.meetup_code,  -- Maps to meetupCode
+                    (
+                        SELECT image_url 
+                        FROM item_image 
+                        WHERE item_id = i.item_id 
+                        LIMIT 1
+                    ) AS image_url
+                FROM 
+                    item i
+                WHERE 
+                    i.buyer_id = ?                  -- The logged-in user (You are the Winner)
+                    AND i.item_status = 'Awaiting Meetup' -- The specific status for winning items
+                ORDER BY 
+                    i.auction_end DESC;             -- Show most recent wins first";
+    }
+
+
+
+    private function retrieveGetPastBidsByUserId() : string 
+    {
+        return "SELECT 
+                    i.item_id,
+                    i.title,
+                    i.current_bid,       
+                    i.item_status,      
+                    i.buyer_id,         
+                    i.seller_id,        
+                    i.category,          
+                    i.auction_end,      
+                    i.date_sold,         
+                    (
+                        SELECT image_url 
+                        FROM item_image 
+                        WHERE item_id = i.item_id 
+                        LIMIT 1
+                    ) AS image_url,
+                    (
+                        SELECT COUNT(*) 
+                        FROM rating r 
+                        WHERE r.item_id = i.item_id 
+                        AND r.rater_id = ? 
+                    ) AS has_rated
+
+                FROM 
+                    bid b
+                JOIN 
+                    item i ON b.item_id = i.item_id
+                WHERE 
+                    b.bidder_id = ?         
+                    AND i.item_status IN ('Sold', 'Expired', 'Cancelled By Seller', 'Removed By Admin', 'Awaiting Meetup')
+
+                GROUP BY 
+                    i.item_id                
+                ORDER BY 
+                    COALESCE(i.date_sold, i.auction_end) DESC; -- Show most recent events first";
     }
 
 

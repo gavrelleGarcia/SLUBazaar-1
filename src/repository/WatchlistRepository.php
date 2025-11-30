@@ -62,51 +62,71 @@ class WatchlistRepository
 
 
 
-    /**
-     * This will be triggered when a user goes to his "My Watchlist" section
-     */
-    public function getWatchlistByUserId(int $userId) : array 
+    public function getWatchlistByUserId(int $userId) : array
     {
-        $query = "SELECT 
-                w.watchlist_id,
-                w.created_at as added_at,
-                i.item_id,
-                i.title,
-                i.current_bid,
-                i.auction_end,
-                -- SENIOR TECHNIQUE: Correlated Subquery
-                -- It fetches exactly ONE image per item to avoid duplicate rows
-                (
-                    SELECT image_url 
-                    FROM item_image 
-                    WHERE item_id = i.item_id 
-                    ORDER BY image_id ASC -- Get the first image uploaded
-                    LIMIT 1 
-                ) as image_url
-            FROM watchlist w
-            JOIN item i ON w.item_id = i.item_id
-            WHERE w.user_id = ?
-            ORDER BY w.created_at DESC";
-
+        $query = $this->retrieveGetWatchlistByUserQuery();
         $statement = $this->db->prepare($query);
 
-        if (!$statement)
-            throw new Exception("There was an error in getWatchlistByUserId query : " . $this->db->error);
+        if (!$statement) 
+            throw new Exception("There was a problem preparing the getWatchlistByUserId() query: " 
+                                . $this->db->error);
 
         $statement->bind_param('i', $userId);
 
         if (!$statement->execute())
-            throw new Exception("Failed to getWatchlistByUserId : " . $statement->error);
+            throw new Exception("getWatchlistByUserId has an error: " . $statement->error);
 
-        $result = $statement->get_result();
-        $rows = $result->fetch_all(MYSQLI_ASSOC);
+        $results = $statement->get_result();
+        $rows = $results->fetch_all(MYSQLI_ASSOC);
         $statement->close();
 
         $watchlists = [];
-        foreach($rows as $row)
-            $watchlists[] = WatchlistItemDTO::fromArray($row);
-
+        foreach ($rows as $row) 
+            $watchlists[] = ItemRowDTO::fromArray($row); // TODO : convert to WatchlistItemDTO.php in the service 
+        
         return $watchlists;
+    }
+
+
+
+    private function retrieveGetWatchlistByUserQuery() : string 
+    {
+        return "SELECT 
+                    i.item_id,
+                    i.title,
+                    i.item_status,
+                    i.starting_bid,
+                    i.current_bid,
+                    i.auction_start,
+                    i.auction_end,
+                    -- Subquery 1: Get one image
+                    (
+                        SELECT image_url 
+                        FROM item_image 
+                        WHERE item_id = i.item_id 
+                        LIMIT 1
+                    ) AS image_url,
+                    -- Subquery 2: Get total bids (needed for logic)
+                    (
+                        SELECT COUNT(*) 
+                        FROM bid 
+                        WHERE item_id = i.item_id
+                    ) AS bid_count
+                FROM 
+                    watchlist w
+                JOIN 
+                    item i ON w.item_id = i.item_id
+                WHERE 
+                    w.user_id = ?
+                ORDER BY 
+                    -- Sort Priority: Active items first, then Pending, then others.
+                    CASE 
+                        WHEN i.item_status = 'Active' THEN 1
+                        WHEN i.item_status = 'Pending' THEN 2
+                        ELSE 3 
+                    END ASC,
+                    -- Secondary Sort: Items ending soonest appear at the top
+                    i.auction_end ASC;";
     }
 
 
