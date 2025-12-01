@@ -8,15 +8,17 @@ class Message
     private string $messageText;
     private bool $isSeller;
     private DateTimeImmutable $createdAt;
+    private bool $isRead;
 
     public function __construct(?int $messageId, int $conversationId, string $messageText, 
-                                bool $isSeller, DateTimeImmutable $createdAt)
+                                bool $isSeller, DateTimeImmutable $createdAt, bool $isRead)
     {   
         $this->messageId = $messageId;
         $this->conversationId = $conversationId;
         $this->messageText = $messageText;
         $this->isSeller = $isSeller;
         $this->createdAt = $createdAt;
+        $this->isRead = $isRead;
     }
 
 
@@ -28,7 +30,8 @@ class Message
             (int)$message['conversation_id'], 
             $message['message_text'], 
             (bool)$message['is_seller'], 
-            new DateTimeImmutable($message['created_at'])
+            new DateTimeImmutable($message['created_at']),
+            (bool)$message['is_read']
         );
     }
     
@@ -129,4 +132,22 @@ class Message
 
 
     
+
+    /**
+     * Get the value of isRead
+     */
+    public function isIsRead(): bool
+    {
+        return $this->isRead;
+    }
+
+    /**
+     * Set the value of isRead
+     */
+    public function setIsRead(bool $isRead): self
+    {
+        $this->isRead = $isRead;
+
+        return $this;
+    }
 }

@@ -39,27 +39,32 @@ class MessageRepository
 
 
 
-    public function getMessagesByConversationId(int $conversationId) : array
+    public function getMessagesByConversationId(int $conversationId, int $userId) : array
     {
-        $query = "SELECT * FROM message WHERE conversation_id = ?";
+        $query = "SELECT m.*, c.seller_id 
+                  FROM message m
+                  JOIN conversation c ON m.conversation_id = c.conversation_id
+                  WHERE m.conversation_id = ?
+                  ORDER BY m.created_at ASC";
+                  
         $statement = $this->db->prepare($query);
 
         if (!$statement)
-            throw new Exception("There was an erorr in preparing the getMessagesByConversationId 
-                                query: " . $this->db->error);
+            throw new Exception("Error preparing getMessagesByConversationId: " . $this->db->error);
 
         $statement->bind_param('i', $conversationId);
 
         if(!$statement->execute())
-            throw new Exception("Failed to getMessageByConversationId : " . $statement->error);
+            throw new Exception("Failed to getMessageByConversationId: " . $statement->error);
 
         $result = $statement->get_result();
         $rows = $result->fetch_all(MYSQLI_ASSOC);
         $statement->close();
 
         $messages = [];
-        foreach ($rows as $row)
-            $messages[] = Message::fromArray($row);
+        foreach ($rows as $row) {
+            $messages[] = MessageDTO::fromArray($row, $userId);
+        }
 
         return $messages;
     }

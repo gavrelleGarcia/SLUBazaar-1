@@ -27,11 +27,9 @@ class RatingCardDTO implements JsonSerializable
             'rating' => $this->ratingValue,
             'comment' => $this->comment,
             'date' => $this->date,
-            'item' => [
-                'id' => $this->itemId,
-                'title' => $this->itemTitle,
-                'price' => $this->itemPrice
-            ],
+            'id' => $this->itemId,
+            'title' => $this->itemTitle,
+            'price' => $this->itemPrice,
             'user' => $this->otherUserName
         ];
     }

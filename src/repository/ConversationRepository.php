@@ -64,6 +64,24 @@ class ConversationRepository
         $statement->close();
     }
 
+    private function retrieveGetConversationsByUserId() : string 
+    {
+        return "SELECT 
+                    c.conversation_id, c.status,
+                    i.title AS item_title,
+                    u.fname AS other_fname, u.lname AS other_lname,
+                    m.message_text, m.created_at AS last_message_time, m.is_read, m.is_seller
+                FROM conversation c
+                JOIN item i ON c.item_id = i.item_id
+                JOIN user u ON u.user_id = IF(c.buyer_id = ?, c.seller_id, c.buyer_id)
+                JOIN message m ON m.message_id = (
+                    SELECT message_id FROM message m2 
+                    WHERE m2.conversation_id = c.conversation_id 
+                    ORDER BY m2.created_at DESC LIMIT 1
+                ) 
+                WHERE c.buyer_id = ? OR c.seller_id = ?
+                ORDER BY m.created_at DESC";
+    }
 
     
     /**
@@ -71,7 +89,7 @@ class ConversationRepository
      */
     public function getConversationsByUserId(int $userId) : array
     {
-        $query = "SELECT * FROM conversation WHERE buyer_id = ? OR seller_id = ?"; // arrange this by last message
+        $query = $this->retrieveGetConversationsByUserId();
         $statement = $this->db->prepare($query);
 
         if (!$statement)
@@ -88,7 +106,7 @@ class ConversationRepository
         $conversations = [];
 
         foreach ($rows as $row)
-            $conversations[] = Conversation::fromArray($row);
+            $conversations[] = ConversationDTO::fromArray($row);
 
         return $conversations;
     }
@@ -100,14 +118,14 @@ class ConversationRepository
      */
     public function getActiveConversationsByUserId(int $userId) : array
     {
-        $query = "SELECT * FROM conversation WHERE (buyer_id = ? OR seller_id = ?) AND `status` = ?";
+        $query = $this->retrieveGetStatusConversationsByUserId();
         $statement = $this->db->prepare($query);
 
         if (!$statement)
             throw new Exception("Failed to prepare the getActiveConversationByUserId query: " . $this->db->error);
 
         $status = Status::Active->value;
-        $statement->bind_param('iii', $userId, $userId, $status);
+        $statement->bind_param('iiis', $userId, $userId, $userId, $status);
 
         if (!$statement->execute())
             throw new Exception("Failed to do getActiveConversationsByUserId: " . $statement->error);
@@ -117,19 +135,17 @@ class ConversationRepository
 
         $activeConversationsOfUser = [];
         foreach($rows as $row)
-            $activeConversationsOfUser[] = Conversation::fromArray($row);
+            $activeConversationsOfUser[] = ConversationDTO::fromArray($row);
 
         return $activeConversationsOfUser;
     }
-
-
 
     /**
      * Retrieves all archived conversations of a user. 
      */
     public function getArchivedConversationsByUserId(int $userId) : array
     {
-        $query = "SELECT * FROM conversation WHERE (buyer_id = ? OR seller_id = ?) AND `status` = ?";
+        $query = $this->retrieveGetStatusConversationsByUserId();
         $statement = $this->db->prepare($query);
 
         if (!$statement)
@@ -147,37 +163,31 @@ class ConversationRepository
         $archivedConversationsOfUser = [];
 
         foreach($rows as $row)
-            $archivedConversationsOfUser[] = Conversation::fromArray($row);
+            $archivedConversationsOfUser[] = ConversationDTO::fromArray($row);
 
         return $archivedConversationsOfUser;
     }
 
 
 
-    /**
-     * Retrieves one conversation of a user through id. 
-     */
-    public function getConversationById(int $conversationid) : ?Conversation
+
+    private function retrieveGetStatusConversationsByUserId() : string 
     {
-        $query = "SELECT * FROM conversation WHERE `conversation_id` = ?";
-        $statement = $this->db->prepare($query);
-
-        if (!$statement)
-            throw new Exception("Failed to prepare the getConversationById query: " . $this->db->error);
-
-        $statement->bind_param('i', $conversationId);
-
-        if (!$statement->execute())
-            throw new Exception("Failed to getConversationById " . $statement->error);
-
-        $result = $statement->get_result();
-        $row = $result->fetch_assoc();
-        $statement->close();
-
-        if ($row)
-            return null;
-
-        return Conversation::fromArray($row);
+        return "SELECT 
+                    c.conversation_id, c.status,
+                    i.title AS item_title,
+                    u.fname AS other_fname, u.lname AS other_lname,
+                    m.message_text, m.created_at AS last_message_time, m.is_read, m.is_seller
+                FROM conversation c
+                JOIN item i ON c.item_id = i.item_id
+                JOIN user u ON u.user_id = IF(c.buyer_id = ?, c.seller_id, c.buyer_id)
+                JOIN message m ON m.message_id = (
+                    SELECT message_id FROM message m2 
+                    WHERE m2.conversation_id = c.conversation_id 
+                    ORDER BY m2.created_at DESC LIMIT 1
+                ) 
+                WHERE (c.buyer_id = ? OR c.seller_id = ?) AND c.status = ?
+                ORDER BY m.created_at DESC";
     }
 
 
