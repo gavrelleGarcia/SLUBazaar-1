@@ -2,6 +2,28 @@
 
 declare(strict_types=1);
 
+
+/**
+ * Defines the allowed types of notifications in the system.
+ * This prevents typos like "OUT_BID" or "outbid" in the code.
+ */
+enum NotificationType: string
+{
+    // Bidder Events
+    case OUTBID = 'OUTBID';
+    case WIN = 'WIN';
+    case WATCHLIST = 'WATCHLIST';
+
+    // Seller Events
+    case SOLD = 'SOLD';
+    case EXPIRED = 'EXPIRED';
+    case COMPLETE = 'COMPLETE'; // Transaction finished/Verified
+
+    // System Events
+    case SYSTEM = 'SYSTEM';
+    case WARNING = 'WARNING'; // Admin actions (bans/removals)
+}
+
 class Notification 
 {
     private ?int $notifId;

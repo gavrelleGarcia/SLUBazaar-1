@@ -201,44 +201,59 @@ class ItemRepository
 
 
 
-
-    // FIX : make it return with title, photo, current bid price, and auction date only
     public function getItemsBySellerId(int $sellerId) : array
     {
-        $query = "SELECT * FROM item WHERE seller_id = ?";
+        // SQL: Fetch Item + First Image + Count of Bids
+        $query = "SELECT 
+                    i.item_id, i.title, i.item_status, 
+                    i.starting_bid, i.current_bid, 
+                    i.auction_start, i.auction_end,
+                    (SELECT image_url FROM item_image WHERE item_id = i.item_id LIMIT 1) as image_url,
+                    (SELECT COUNT(*) FROM bid WHERE item_id = i.item_id) as bid_count
+                  FROM item i
+                  WHERE i.seller_id = ?
+                  ORDER BY i.created_at DESC";
+
         $statement = $this->db->prepare($query);
 
         if (!$statement)
-            throw new Exception("There was an error preparing the getItemsBySellerId query : " . $this->db->error);
+            throw new Exception("Error preparing getItemsBySellerId: " . $this->db->error);
 
         $statement->bind_param('i', $sellerId);
 
         if (!$statement->execute())
-            throw new Exception("Failed to getItemsBySellerId : " . $statement->error);
-
+            throw new Exception("Failed to getItemsBySellerId: " . $statement->error);
 
         $result = $statement->get_result();
         $rows = $result->fetch_all(MYSQLI_ASSOC);
         $statement->close();
 
-        $items = [];
-        foreach ($rows as $row)
-            $items[] = Item::fromArray($row);
+        $dtos = [];
+        foreach ($rows as $row) {
+            $dtos[] = ItemCardDTO::fromArray($row);
+        }
 
-        return $items;
+        return $dtos;
     }
 
 
-    // FIX : make it return with title, photo current bid price, and auction date only
+    
+    
+
     public function search(SearchItemsRequestDTO $criteria) : array
     {
-        $sql = "SELECT item.* 
+        $sql = "SELECT 
+                    item.item_id, item.title, item.item_status, 
+                    item.starting_bid, item.current_bid, 
+                    item.auction_start, item.auction_end,
+                    (SELECT image_url FROM item_image WHERE item_id = item.item_id LIMIT 1) as image_url,
+                    (SELECT COUNT(*) FROM bid WHERE item_id = item.item_id) as bid_count
                 FROM item 
                 JOIN user ON item.seller_id = user.user_id 
                 WHERE 1=1";
+                
         $params = [];
         $types = "";
-
 
         $this->applyKeywordFilter($sql, $params, $types, $criteria);
         $this->applyCategoryFilter($sql, $params, $types, $criteria);
@@ -290,6 +305,54 @@ class ItemRepository
 
 
 
+    /**
+     * Bulk update to remove all active listings for a banned user.
+     */
+    public function removeAllActiveItemsBySeller(int $sellerId): void
+    {
+        $query = "UPDATE item 
+                  SET item_status = 'Removed By Admin' 
+                  WHERE seller_id = ? 
+                  AND item_status IN ('Active', 'Pending')";
+
+        $statement = $this->db->prepare($query);
+
+        if (!$statement)
+            throw new Exception("Error preparing removeAllActiveItemsBySeller: " . $this->db->error);
+
+        $statement->bind_param('i', $sellerId);
+
+        if (!$statement->execute())
+            throw new Exception("Failed to remove items for banned user: " . $statement->error);
+
+        $statement->close();
+    }
+
+
+
+    /**
+     * Efficiently gathers item statistics in one query.
+     * Closed = Sold, Expired, Cancelled, Removed (Everything not Active/Pending)
+     */
+    public function getItemDashboardStats(): array
+    {
+        $query = "SELECT 
+                    SUM(CASE WHEN item_status = 'Active' THEN 1 ELSE 0 END) AS active_count,
+                    SUM(CASE WHEN item_status = 'Sold' THEN 1 ELSE 0 END) AS sold_count,
+                    SUM(CASE WHEN item_status NOT IN ('Active', 'Pending') THEN 1 ELSE 0 END) AS closed_count
+                  FROM item";
+
+        $result = $this->db->query($query); 
+        
+        if (!$result)
+            throw new Exception("Failed to get item stats: " . $this->db->error);
+
+        return $result->fetch_assoc();
+    }
+
+
+
+
 
 
 
@@ -297,26 +360,26 @@ class ItemRepository
 
     private function executeQuery(string $sql, array $params, string $types) : array
     {
-        $items = [];
         $statement = $this->db->prepare($sql);
 
         if (!$statement)
-            throw new Exception("Failed to prepare the search query " . $this->db->error);
+            throw new Exception("Failed to prepare search query: " . $this->db->error);
 
         if (!empty($params))
             $statement->bind_param($types, ...$params);
 
         if (!$statement->execute())
-            throw new Exception("Failed to do execute the search " . $statement->error);
+            throw new Exception("Failed to execute search: " . $statement->error);
 
         $result = $statement->get_result();
         $rows = $result->fetch_all(MYSQLI_ASSOC);
         $statement->close();
 
-        foreach($rows as $row)
-            $items[] = Item::fromArray($row);
+        $dtos = [];
+        foreach($rows as $row) 
+            $dtos[] = ItemCardDTO::fromArray($row);
 
-        return $items;
+        return $dtos;
     }
 
 

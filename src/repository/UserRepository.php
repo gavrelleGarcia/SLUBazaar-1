@@ -20,7 +20,7 @@ class UserRepository
     /**
      * This will be triggered when a user registers ofc
      */
-    public function addUser(User $user) : void
+    public function addUser(User $user) : int
     {
         $query = "INSERT INTO user(fname, lname, email, password_hash, created_at) 
                     values (?, ?, ?, ?, ?)";
@@ -40,9 +40,28 @@ class UserRepository
             throw new Exception("Failed to Add a User : " . $statement->error);
 
         $user->setUserId($this->db->insert_id);
+        $userId = $this->db->insert_id;
+        $statement->close();
+        return $userId;
+    }
+    
+
+
+    public function updatePassword(int $userId, string $newHash) : void
+    {
+        $query = "UPDATE user SET password_hash = ? WHERE user_id = ?";
+        $statement = $this->db->prepare($query);
+
+        if (!$statement)
+            throw new Exception("Error preparing updatePassword: " . $this->db->error);
+
+        $statement->bind_param('si', $newHash, $userId);
+
+        if (!$statement->execute())
+            throw new Exception("Failed to update password: " . $statement->error);
+
         $statement->close();
     }
-
 
 
     /**
@@ -120,6 +139,7 @@ class UserRepository
 
         $statement->close();
     }
+
 
 
 
@@ -224,7 +244,43 @@ class UserRepository
     }
 
 
-    public function getUserRetrievalQuery() : string
+
+    public function findByEmail(string $email): ?array
+    {
+        $query = "SELECT * FROM user WHERE email = ? LIMIT 1";
+
+        $statement = $this->db->prepare($query);
+
+        if (!$statement) 
+            throw new Exception("Error preparing findByEmail: " . $this->db->error);
+
+        $statement->bind_param('s', $email);
+
+        if (!$statement->execute())
+            throw new Exception("Error executing findByEmail: " . $statement->error);
+
+        $result = $statement->get_result();
+        $user = $result->fetch_assoc(); 
+        $statement->close();
+        return $user; // Returns [ 'user_id' => 1, ... ] OR null
+    }
+
+
+    public function countTotalMembers(): int
+    {
+        // exclude Admins 
+        $query = "SELECT COUNT(*) as total FROM user WHERE role = 'Member'";
+        $result = $this->db->query($query);
+        
+        if (!$result)
+            throw new Exception("Failed to count users: " . $this->db->error);
+
+        $row = $result->fetch_assoc();
+        return (int) $row['total'];
+    }
+
+
+    private function getUserRetrievalQuery() : string
     {
         return "SELECT 
                 user.fname, user.lname, user.email, 

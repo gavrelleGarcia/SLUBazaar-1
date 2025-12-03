@@ -34,7 +34,7 @@ class Report
     public function __construct(?int $reportId, int $reporterId, ?int $targetUserId, 
                                 ?int $targetItemId, ReportType $reportType, string $reasonType, 
                                 string $description, ReportStatus $reportStatus, 
-                                string $adminNotes, DateTimeImmutable $createdAt)
+                                ?string $adminNotes, DateTimeImmutable $createdAt)
     {
         $this->reportId = $reportId;
         $this->reporterId = $reporterId;

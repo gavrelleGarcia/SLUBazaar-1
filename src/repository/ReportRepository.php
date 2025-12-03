@@ -74,4 +74,54 @@ class ReportRepository
         $statement->close();
     }
 
+
+    public function getReportById(int $reportId): ?Report
+    {
+        $query = "SELECT * FROM report WHERE report_id = ?";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param('i', $reportId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        
+        return $row ? Report::fromArray($row) : null;
+    }
+
+    public function getReportsByStatus(string $status): array
+    {
+        $query = "SELECT * FROM report WHERE report_status = ? ORDER BY created_at DESC";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param('s', $status);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $rows = $result->fetch_all(MYSQLI_ASSOC);
+        
+        $reports = [];
+        foreach($rows as $row) $reports[] = Report::fromArray($row);
+        return $reports;
+    }
+
+
+
+    public function getPendingReportStats(): array
+    {
+        $query = "SELECT 
+                    SUM(CASE WHEN report_type = 'Item' THEN 1 ELSE 0 END) AS item_reports,
+                    SUM(CASE WHEN report_type = 'User' THEN 1 ELSE 0 END) AS user_reports
+                  FROM report 
+                  WHERE report_status = 'Pending'";
+
+        $result = $this->db->query($query);
+        
+        if (!$result)
+            throw new Exception("Failed to get report stats: " . $this->db->error);
+
+        $row = $result->fetch_assoc();
+        
+        return [
+            'item_reports' => (int) ($row['item_reports'] ?? 0),
+            'user_reports' => (int) ($row['user_reports'] ?? 0)
+        ];
+    }
+
 }

@@ -39,29 +39,28 @@ class NotificationRepository
     }
 
 
-    public function getNotificationsByUserId(int $userId) : array 
+    public function getNotificationsByUserId(int $userId): array 
     {
-        $query = "SELECT * FROM notification WHERE user_id = ?";
+        $query = "SELECT * FROM notification WHERE user_id = ? ORDER BY notif_time DESC";
         $statement = $this->db->prepare($query);
 
         if (!$statement)
-            throw new Exception("There was an error preparing the getNotificationsByUserId query : " 
-            . $this->db->error);
+            throw new Exception("Error preparing getNotificationsByUserId query: " . $this->db->error);
 
         $statement->bind_param('i', $userId);
 
         if (!$statement->execute())
-            throw new Exception("Failed to getNotificationsByUserId : " . $statement->error);
+            throw new Exception("Failed to getNotificationsByUserId: " . $statement->error);
 
         $result = $statement->get_result();
         $rows = $result->fetch_all(MYSQLI_ASSOC);
         $statement->close();
 
-        $users = [];
-        foreach($rows as $row)
-            $users[] = Notification::fromArray($row);
+        $dtos = [];
+        foreach ($rows as $row)
+            $dtos[] = NotificationDTO::fromArray($row);
         
-        return $users;
+        return $dtos;
     }
 
 

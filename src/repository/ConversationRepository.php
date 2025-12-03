@@ -171,6 +171,23 @@ class ConversationRepository
 
 
 
+    public function getById(int $conversationId): ?Conversation
+    {
+        $query = "SELECT * FROM conversation WHERE conversation_id = ?";
+        $statement = $this->db->prepare($query);
+        $statement->bind_param('i', $conversationId);
+        $statement->execute();
+        $result = $statement->get_result();
+        $row = $result->fetch_assoc();
+        
+        if (!$row) return null;
+        
+        return Conversation::fromArray($row);
+    }
+
+
+
+
     private function retrieveGetStatusConversationsByUserId() : string 
     {
         return "SELECT 
