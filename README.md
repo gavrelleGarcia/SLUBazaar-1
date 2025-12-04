@@ -2,7 +2,7 @@
 
 # 🛒 SLU Bazaar
 
-A professional auction and marketplace platform built with **Vanilla PHP 8.2**, structured using the **MVC Pattern**, **Dependency Injection**, and **AJAX** for seamless user interaction.
+Our project on WEB-TECH
 
 ---
 
