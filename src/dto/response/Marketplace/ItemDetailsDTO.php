@@ -2,9 +2,6 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../model/Item.php';
-require_once __DIR__ . '/../../model/User.php';
-require_once __DIR__ . '/ItemPageBidDTO.php'; // The one we created previously
 
 class ItemDetailsDTO implements JsonSerializable
 {

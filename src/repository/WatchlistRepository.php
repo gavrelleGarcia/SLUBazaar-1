@@ -126,7 +126,7 @@ class WatchlistRepository
 
         $watchlists = [];
         foreach ($rows as $row) 
-            $watchlists[] = ItemCardDTO::fromArray($row); 
+            $watchlists[] = SellerListingCardDTO::fromArray($row); 
         
         return $watchlists;
     }

@@ -6,7 +6,7 @@ declare(strict_types=1);
  * The class that will be passed to the Profile View (My Active Items View)
  */
 
-class ItemCardDTO implements JsonSerializable
+class SellerListingCardDTO implements JsonSerializable
 {
     public function __construct(
         public readonly int $itemId,
@@ -41,6 +41,50 @@ class ItemCardDTO implements JsonSerializable
                 'label' => $this->timerLabel
             ]
         ];
+    }
+
+
+
+    public static function fromArray(array $row): self
+    {
+        // 1. Calculate Bid Logic
+        $bidCount = (int) ($row['bid_count'] ?? 0);
+        
+        // If there are bids, show Current Bid. If 0 bids, show Starting Bid.
+        if ($bidCount > 0) {
+            $displayPrice = (float) $row['current_bid'];
+            $priceLabel = "Current Bid";
+        } else {
+            $displayPrice = (float) $row['starting_bid'];
+            $priceLabel = "Starting Bid";
+        }
+
+        // 2. Calculate Timer Logic
+        $status = $row['item_status'];
+        $auctionStart = new DateTimeImmutable($row['auction_start']);
+        $auctionEnd = new DateTimeImmutable($row['auction_end']);
+        $now = new DateTimeImmutable();
+
+        // Logic: If item is Pending (future), countdown to Start. Otherwise countdown to End.
+        if ($status === 'Pending' || $auctionStart > $now) {
+            $timerTarget = $auctionStart;
+            $timerLabel = "Starts in:";
+        } else {
+            $timerTarget = $auctionEnd;
+            $timerLabel = "Ends in:";
+        }
+
+        return new self(
+            (int) $row['item_id'],
+            $row['title'],
+            $row['image_url'] ?? null,
+            $status,
+            $bidCount,
+            $displayPrice,
+            $priceLabel,
+            $timerTarget,
+            $timerLabel
+        );
     }
 
 }

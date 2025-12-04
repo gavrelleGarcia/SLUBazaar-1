@@ -1,0 +1,33 @@
+# ------------------------------------------------
+# 1. SECURITY (Critical)
+# ------------------------------------------------
+# Never push actual database credentials
+config/database.php
+.env
+
+# ------------------------------------------------
+# 2. DEPENDENCIES
+# ------------------------------------------------
+# If you add Composer later
+/vendor/
+composer.lock
+
+
+
+# ------------------------------------------------
+# 4. OS & IDE FILES (Junk)
+# ------------------------------------------------
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.php-cs-fixer.cache
+
+# ------------------------------------------------
+# 5. LOGS
+# ------------------------------------------------
+error.log
+access.log
+php_errors.log

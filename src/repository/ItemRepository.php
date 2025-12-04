@@ -258,7 +258,7 @@ class ItemRepository
 
         $dtos = [];
         foreach ($rows as $row) {
-            $dtos[] = ItemCardDTO::fromArray($row);
+            $dtos[] = SellerListingCardDTO::fromArray($row);
         }
 
         return $dtos;
