@@ -2,9 +2,6 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/BaseController.php';
-require_once __DIR__ . '/../service/ModerationService.php';
-
 class AdminController extends BaseController
 {
     private ModerationService $modService;
@@ -42,7 +39,7 @@ class AdminController extends BaseController
 
         try {
             $stats = $this->modService->getDashboardMetrics();
-            require __DIR__ . '/../view/admin/dashboard.php'; // PLACEHOLDER
+            require __DIR__ . '/../view/admin/dashboard.php'; // PLACEHOLDER ################################
         } catch (Exception $e) {
             echo "Error loading dashboard: " . $e->getMessage();
         }
@@ -65,7 +62,7 @@ class AdminController extends BaseController
             if ($this->isAjax()) 
                 $this->jsonResponse($reports);
             else 
-                require __DIR__ . '/../view/admin/reports.php'; // PLACEHOLDER
+                require __DIR__ . '/../view/admin/reports.php'; // PLACEHOLDER ####################################
         } catch (Exception $e) {
             $this->errorResponse($e->getMessage());
         }
@@ -76,7 +73,6 @@ class AdminController extends BaseController
 
     /**
      * Route: index.php?action=admin_users
-     * Requirement: B.6 (Search/View Profiles)
      */
     public function viewUsers(): void
     {
@@ -88,7 +84,7 @@ class AdminController extends BaseController
         if ($this->isAjax()) {
             $this->jsonResponse($users);
         } else {
-            require __DIR__ . '/../view/admin/users.php'; // You need to create this view
+            require __DIR__ . '/../view/admin/users.php'; // PLACEHOLDER ####################################
         }
     }
 
@@ -107,7 +103,7 @@ class AdminController extends BaseController
         if ($this->isAjax()) {
             $this->jsonResponse($items);
         } else {
-            require __DIR__ . '/../view/admin/listings.php'; // You need to create this view
+            require __DIR__ . '/../view/admin/listings.php'; // PLACEHOLDER ###################################
         }
     }
 

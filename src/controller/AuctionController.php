@@ -2,9 +2,6 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/BaseController.php';
-require_once __DIR__ . '/../service/AuctionService.php';
-
 class AuctionController extends BaseController
 {
     private AuctionService $auctionService;
@@ -39,7 +36,7 @@ class AuctionController extends BaseController
         if ($this->isAjax())
             $this->jsonResponse($items); 
         else 
-            require __DIR__ . '/../view/marketplace.php'; 
+            require __DIR__ . '/../view/marketplace.php';  // PLACEHOLDER ##################################################
     }
 
 
@@ -61,9 +58,9 @@ class AuctionController extends BaseController
                 return;
             }
 
-            require __DIR__ . '/../view/item_details.php'; // THE $itemDetails VARIABLE IS AVAILABLE IN THE PHP HTML FILE
+            require __DIR__ . '/../view/item_details.php'; // PLACEHOLDER #############################################
         } catch (Exception $e) {
-            require __DIR__ . '/../view/404.php'; 
+            require __DIR__ . '/../view/404.php'; // PLACEHOLDER ############################## IDK ABOUT THIS, IF IT NEEDS NEW PAGE OR WHAT
         }
     }
 
@@ -100,6 +97,7 @@ class AuctionController extends BaseController
 
     /**
      * Route: index.php?action=create_listing
+     * SERVES 2 PURPOSE, NAVIGATING INTO THE 'CREATE LISTING' AND ACTUALLY SUBMITTING THE FORM for the CREATION OF LISTING
      */
     public function createListing(): void
     {
@@ -144,7 +142,7 @@ class AuctionController extends BaseController
                 $this->errorResponse($e->getMessage());
             }
         } else {
-            require __DIR__ . '/../view/create_listing.php';
+            require __DIR__ . '/../view/create_listing.php'; // PLACEHOLDER ########################################
         }
     }
 

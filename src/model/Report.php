@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/enum/ReportType.php';
-require_once __DIR__ . '/enum/ReportStatus.php';
 
 
 class Report 

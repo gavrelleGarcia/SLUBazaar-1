@@ -3,10 +3,6 @@
 declare(strict_types=1);
 
 
-require_once __DIR__ . '/../model/Conversation.php';
-require_once __DIR__ . '/../model/enum/ConversationStatus.php';
-
-
 class ConversationRepository 
 {
 

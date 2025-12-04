@@ -3,9 +3,6 @@
 declare(strict_types=1);
 
 
-require_once '../model/Rating.php';
-require_once '../dto/RatingDetails.DTO.php';
-
 class RatingRepository 
 {
     private mysqli $db;

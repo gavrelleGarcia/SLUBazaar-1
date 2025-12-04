@@ -74,26 +74,30 @@ require_once __DIR__ . '/controller/AdminController.php';
 
 class Container
 {
-    private array $services = []; // Cache for instantiated objects (Singletons)
+    private array $services = []; 
     private ?mysqli $db = null;
+    
+    private array $dbConfig; 
 
-    private string $dbHost = '127.0.0.1';
-    private string $dbUser = 'root';
-    private string $dbPass = '';
-    private string $dbName = 'slubazaar';
+    public function __construct(array $dbConfig)
+    {
+        $this->dbConfig = $dbConfig;
+    }
 
-    /**
-     * Database Connection (Lazy)
-     */
+    
     public function getDb(): mysqli
     {
         if ($this->db === null) {
             mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
             try {
-                $this->db = new mysqli($this->dbHost, $this->dbUser, $this->dbPass, $this->dbName);
+                $this->db = new mysqli(
+                    $this->dbConfig['host'], 
+                    $this->dbConfig['user'], 
+                    $this->dbConfig['pass'], 
+                    $this->dbConfig['name']
+                );
                 $this->db->set_charset("utf8mb4");
             } catch (mysqli_sql_exception $e) {
-                // Return JSON error because this usually happens during AJAX requests
                 http_response_code(500);
                 echo json_encode(['error' => 'Database connection failed: ' . $e->getMessage()]);
                 exit;
@@ -101,6 +105,10 @@ class Container
         }
         return $this->db;
     }
+
+
+
+
 
     // =========================================================================
     //  REPOSITORIES
@@ -242,6 +250,10 @@ class Container
         }
         return $this->services['modService'];
     }
+
+
+
+    
 
     // =========================================================================
     //  CONTROLLERS (Inject Services)

@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/enum/AccountStatus.php';
-require_once __DIR__ . '/enum/Role.php';
 
 
 class User 

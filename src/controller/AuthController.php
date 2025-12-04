@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/BaseController.php';
-require_once __DIR__ . '/../service/AuthService.php';
 
 class AuthController extends BaseController
 {
@@ -47,7 +45,7 @@ class AuthController extends BaseController
                 header("Location: index.php?action=marketplace");
                 exit;
             }
-            require __DIR__ . '/../view/login.php';
+            require __DIR__ . '/../view/login.php'; // PLACEHOLDER #########################################
         }
     }
 
@@ -88,7 +86,7 @@ class AuthController extends BaseController
                 header("Location: index.php?action=marketplace");
                 exit;
             }
-            require __DIR__ . '/../view/register.php';
+            require __DIR__ . '/../view/register.php'; // PLACEHOLDER #################################
         }
     }
 

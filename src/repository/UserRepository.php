@@ -3,9 +3,6 @@
 declare(strict_types=1);
 
 
-require_once '../model/User.php';
-require_once '../dto/AdminUserTableRowDTO.php';
-
 class UserRepository 
 {
     private mysqli $db;

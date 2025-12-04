@@ -2,11 +2,6 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/BaseController.php';
-require_once __DIR__ . '/../service/UserService.php';
-require_once __DIR__ . '/../service/AuthService.php';
-require_once __DIR__ . '/../service/NotificationService.php';
-require_once __DIR__ . '/../service/ChatService.php'; 
 
 class UserController extends BaseController
 {
@@ -38,7 +33,7 @@ class UserController extends BaseController
             // Get Header Info (Name, Avatar, Rating)
             $user = $this->userService->getProfileInfo($userId);
             // Render View
-            require __DIR__ . '/../view/profile.php';
+            require __DIR__ . '/../view/profile.php'; // PLACEHOLDER ###################################
         } catch (Exception $e) {
             $this->authService->logout();
             header("Location: index.php?action=login");

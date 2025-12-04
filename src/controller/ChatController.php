@@ -2,9 +2,6 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/BaseController.php';
-require_once __DIR__ . '/../service/ChatService.php';
-
 class ChatController extends BaseController
 {
     private ChatService $chatService;
@@ -23,7 +20,7 @@ class ChatController extends BaseController
     {
         $userId = $this->requireLogin();
         $conversations = $this->chatService->getUserConversations($userId);
-        require __DIR__ . '/../view/chat.php';
+        require __DIR__ . '/../view/chat.php'; // PLACEHOLDER ######################################
     }
 
 
@@ -49,7 +46,7 @@ class ChatController extends BaseController
         }
     }
 
-    
+
 
     /**
      * AJAX: Send Text

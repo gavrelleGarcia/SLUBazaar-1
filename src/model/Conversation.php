@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/enum/ConversationStatus.php';
-
 
 class Conversation 
 {

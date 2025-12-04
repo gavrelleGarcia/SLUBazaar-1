@@ -2,12 +2,7 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../repository/ConversationRepository.php';
-require_once __DIR__ . '/../repository/MessageRepository.php';
-require_once __DIR__ . '/../repository/ItemRepository.php';
-require_once __DIR__ . '/../model/Message.php'; 
-require_once __DIR__ . '/../model/Conversation.php'; 
-require_once __DIR__ . '/../model/enum/ConversationStatus.php'; 
+
 
 
 class ChatService

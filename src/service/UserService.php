@@ -2,12 +2,7 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../repository/UserRepository.php';
-require_once __DIR__ . '/../repository/ItemRepository.php';
-require_once __DIR__ . '/../repository/BidRepository.php';
-require_once __DIR__ . '/../repository/RatingRepository.php';
-require_once __DIR__ . '/../repository/WatchlistRepository.php'; 
-require_once __DIR__ . '/../model/Rating.php';
+
 
 class UserService
 {

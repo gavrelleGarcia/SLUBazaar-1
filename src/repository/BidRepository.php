@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-require_once '../model/Bid.php';
-require_once '../model/Item.php';
+
 
 class BidRepository 
 {

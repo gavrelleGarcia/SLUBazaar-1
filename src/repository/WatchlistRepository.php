@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../model/Watchlist.php';
-require_once __DIR__ . '/../dto/response/Marketplace/ItemCardDTO.php';
 
 class WatchlistRepository 
 {

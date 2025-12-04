@@ -66,14 +66,14 @@ abstract class BaseController
      */
     protected function requireLogin(): int
     {
-        if (!isset($_SESSION['user_id'])) {
-            if ($this->isAjax()) {
+        if (!isset($_SESSION['user_id']))
+            if ($this->isAjax())
                 $this->errorResponse("Unauthorized", 401);
-            } else {
+            else {
                 header("Location: index.php?action=login");
                 exit;
             }
-        }
+            
         return (int)$_SESSION['user_id'];
     }
 

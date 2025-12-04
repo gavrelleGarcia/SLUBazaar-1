@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../repository/ReportRepository.php';
-require_once __DIR__ . '/../repository/UserRepository.php';
-require_once __DIR__ . '/../repository/ItemRepository.php';
-require_once __DIR__ . '/../model/Report.php';
-require_once __DIR__ . '/../model/AccountStatus.php';
-require_once __DIR__ . '/../model/enum/ReportStatus.php';
-require_once __DIR__ . '/../model/enum/ReportType.php';
 
 
 

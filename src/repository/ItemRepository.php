@@ -2,10 +2,6 @@
 
 declare(strict_types=1);
 
-require_once '../model/Item.php';
-require_once '../dto/SearchItemsRequestDTO.php';
-require_once '../dto/ItemRowDTO.php';
-
 class ItemRepository 
 {
     private mysqli $db;

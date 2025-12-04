@@ -2,17 +2,6 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../repository/ItemRepository.php';
-require_once __DIR__ . '/../repository/BidRepository.php';
-require_once __DIR__ . '/../repository/WatchlistRepository.php';
-require_once __DIR__ . '/../service/NotificationService.php';
-require_once __DIR__ . '/../service/ChatService.php'; 
-
-require_once __DIR__ . '/../model/Item.php';
-require_once __DIR__ . '/../model/Bid.php';
-require_once __DIR__ . '/../model/enum/Category.php';  
-require_once __DIR__ . '/../model/enum/ItemStatus.php';
-require_once __DIR__ . '/../dto/request/SearchItemsRequestDTO.php'; 
 
 class AuctionService
 {
