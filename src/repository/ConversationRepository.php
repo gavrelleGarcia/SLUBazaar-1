@@ -3,14 +3,16 @@
 declare(strict_types=1);
 
 
-require_once '../model/Conversation.php';
+require_once __DIR__ . '/../model/Conversation.php';
+require_once __DIR__ . '/../model/enum/ConversationStatus.php';
+
 
 class ConversationRepository 
 {
 
     private mysqli $db;
 
-    public function _construct(mysqli $db)
+    public function __construct(mysqli $db)
     {
         $this->db = $db;
     }
@@ -50,7 +52,7 @@ class ConversationRepository
      */
     public function archiveByItemId(int $itemId) : void
     {
-        $status = Status::Archived->value;
+        $status = ConversationStatus::Archived->value;
         $statement = $this->db->prepare("UPDATE conversation SET status = ? WHERE `item_id` = ?");
 
         if (!$statement) 
@@ -124,7 +126,7 @@ class ConversationRepository
         if (!$statement)
             throw new Exception("Failed to prepare the getActiveConversationByUserId query: " . $this->db->error);
 
-        $status = Status::Active->value;
+        $status = ConversationStatus::Active->value;
         $statement->bind_param('iiis', $userId, $userId, $userId, $status);
 
         if (!$statement->execute())
@@ -151,7 +153,7 @@ class ConversationRepository
         if (!$statement)
             throw new Exception("Failed to prepare the getArchivedConversationByUserId query: " . $this->db->error);
 
-        $status = Status::Archived->value;
+        $status = ConversationStatus::Archived->value;
         $statement->bind_param('iii', $userId, $userId, $status);
 
         if (!$statement->execute())

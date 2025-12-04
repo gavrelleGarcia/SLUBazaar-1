@@ -7,7 +7,8 @@ require_once __DIR__ . '/../repository/MessageRepository.php';
 require_once __DIR__ . '/../repository/ItemRepository.php';
 require_once __DIR__ . '/../model/Message.php'; 
 require_once __DIR__ . '/../model/Conversation.php'; 
-require_once __DIR__ . '/../model/Status.php'; 
+require_once __DIR__ . '/../model/enum/ConversationStatus.php'; 
+
 
 class ChatService
 {
@@ -37,7 +38,7 @@ class ChatService
             $itemId,
             $buyerId,
             $sellerId,
-            Status::Active
+            ConversationStatus::Active
         );
 
         $this->convoRepo->addConversation($convo);
@@ -85,7 +86,7 @@ class ChatService
         if ($userId !== $convo->getBuyerId() && $userId !== $convo->getSellerId())
             throw new Exception("Unauthorized access.");
 
-        if ($convo->getStatus() === Status::Archived)
+        if ($convo->getStatus() === ConversationStatus::Archived)
             throw new Exception("This conversation is archived. You cannot send messages.");
 
         $isSeller = ($userId === $convo->getSellerId());
@@ -102,7 +103,7 @@ class ChatService
     }
 
 
-    
+
     /**
      * Requirement: A.3.4 (Meetup Verification)
      * Seller enters code -> Item becomes Sold -> Chat Archived.

@@ -2,31 +2,8 @@
 
 declare(strict_types=1);
 
-enum ItemStatus : string 
-{
-    case Pending = 'Pending';
-    case Active = 'Active';
-    case Expired = 'Expired';
-    case AwaitingMeetup = 'Awaiting Meetup';
-    case Sold = 'Sold';
-    case Disputed = 'Disputed';
-    case CancelledBySeller = 'Cancelled By Seller';
-}
-
-
-enum Category : string 
-{
-    case Textbooks = 'Textbooks';
-    case Stationery = 'Stationery';
-    case Electronics = 'Electronics';
-    case Clothing = 'Clothing';
-    case SportsEquipment ='Sports Equipment';
-    case Accessories = 'Accessories';
-    case Furniture = 'Furniture';
-    case Collectibles = 'Collectibles';
-    case Other = 'Other';
-}
-
+require_once __DIR__ . '/enum/Category.php';
+require_once __DIR__ . '/enum/ItemStatus.php';
 
 
 class Item 

@@ -2,11 +2,8 @@
 
 declare(strict_types=1);
 
-enum Status : string
-{
-    case Active = 'Active';
-    case Archived = 'Archived';
-}
+require_once __DIR__ . '/enum/ConversationStatus.php';
+
 
 class Conversation 
 {
@@ -15,11 +12,11 @@ class Conversation
     private int $itemId;
     private int $buyerId;
     private int $sellerId;
-    private Status $status;
+    private ConversationStatus $status;
 
 
     public function __construct(?int $conversationId, int $itemId, int $buyerId, 
-                                int $sellerId, Status $status) 
+                                int $sellerId, ConversationStatus $status) 
     {
         $this->conversationId = $conversationId;
         $this->itemId = $itemId;
@@ -37,7 +34,7 @@ class Conversation
             (int)$conversation['item_id'],
             (int)$conversation['buyer_id'],
             (int)$conversation['seller_id'],
-            Status::from($conversation['status'])
+            ConversationStatus::from($conversation['status'])
         );
     }
 
@@ -94,13 +91,13 @@ class Conversation
     }
 
 
-    public function getStatus() : Status 
+    public function getStatus() : ConversationStatus 
     {
         return $this->status;
     }
 
 
-    public function setStatus(Status $status) : self
+    public function setStatus(ConversationStatus $status) : self
     {
         $this->status = $status;
         return $this;

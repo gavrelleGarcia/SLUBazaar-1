@@ -2,60 +2,270 @@
 
 declare(strict_types=1);
 
-// Require your Controller classes here or ensure they are loaded in bootstrap
-require_once '/../controller/AuthController.php';
-// require_once __DIR__ . '/controller/AuctionController.php'; // etc...
+// 1. Load All Class Definitions (Order generally doesn't matter here if just defining)
+// Ideally use Composer autoload, but manual require works:
+
+// Models & Enums
+require_once __DIR__ . '/model/AccountStatus.php';
+require_once __DIR__ . '/model/Category.php';
+require_once __DIR__ . '/model/ItemStatus.php';
+require_once __DIR__ . '/model/NotificationType.php';
+require_once __DIR__ . '/model/User.php';
+require_once __DIR__ . '/model/Item.php';
+require_once __DIR__ . '/model/Bid.php';
+require_once __DIR__ . '/model/Rating.php';
+require_once __DIR__ . '/model/Conversation.php';
+require_once __DIR__ . '/model/Message.php';
+require_once __DIR__ . '/model/Report.php';
+require_once __DIR__ . '/model/Watchlist.php';
+
+// DTOs
+require_once __DIR__ . '/dto/request/SearchItemsRequestDTO.php';
+require_once __DIR__ . '/dto/response/Marketplace/ItemCardDTO.php';
+require_once __DIR__ . '/dto/response/Marketplace/ItemDetailsDTO.php';
+require_once __DIR__ . '/dto/response/Marketplace/ItemPageBidDTO.php';
+require_once __DIR__ . '/dto/response/Admin/AdminUserTableRowDTO.php';
+require_once __DIR__ . '/dto/response/Notification/NotificationDTO.php';
+// ... ensure all other DTOs are loaded
+
+// Repositories
+require_once __DIR__ . '/repository/UserRepository.php';
+require_once __DIR__ . '/repository/ItemRepository.php';
+require_once __DIR__ . '/repository/BidRepository.php';
+require_once __DIR__ . '/repository/RatingRepository.php';
+require_once __DIR__ . '/repository/NotificationRepository.php';
+require_once __DIR__ . '/repository/WatchlistRepository.php';
+require_once __DIR__ . '/repository/ConversationRepository.php';
+require_once __DIR__ . '/repository/MessageRepository.php';
+require_once __DIR__ . '/repository/ReportRepository.php';
+
+// Services
+require_once __DIR__ . '/service/NotificationService.php';
+require_once __DIR__ . '/service/AuthService.php';
+require_once __DIR__ . '/service/ChatService.php';
+require_once __DIR__ . '/service/UserService.php';
+require_once __DIR__ . '/service/AuctionService.php';
+require_once __DIR__ . '/service/ModerationService.php';
+
+// Controllers
+require_once __DIR__ . '/controller/BaseController.php';
+require_once __DIR__ . '/controller/AuthController.php';
+require_once __DIR__ . '/controller/UserController.php';
+require_once __DIR__ . '/controller/AuctionController.php';
+require_once __DIR__ . '/controller/ChatController.php';
+require_once __DIR__ . '/controller/AdminController.php';
+
 
 class Container
 {
-    private array $services = [];
-    private mysqli $db;
+    private array $services = []; // Cache for instantiated objects (Singletons)
+    private ?mysqli $db = null;
 
-    public function __construct()
+    private string $dbHost = '127.0.0.1';
+    private string $dbUser = 'root';
+    private string $dbPass = '';
+    private string $dbName = 'slubazaar';
+
+    /**
+     * Database Connection (Lazy)
+     */
+    public function getDb(): mysqli
     {
-        // 1. Establish DB Connection immediately
-        $this->db = new mysqli('127.0.0.1', 'root', '', 'slubazaar');
-        
-        if ($this->db->connect_error) {
-            // JSON response because this usually happens during an API request
-            http_response_code(500);
-            echo json_encode(['error' => 'Database connection failed: ' . $this->db->connect_error]);
-            exit;
+        if ($this->db === null) {
+            mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+            try {
+                $this->db = new mysqli($this->dbHost, $this->dbUser, $this->dbPass, $this->dbName);
+                $this->db->set_charset("utf8mb4");
+            } catch (mysqli_sql_exception $e) {
+                // Return JSON error because this usually happens during AJAX requests
+                http_response_code(500);
+                echo json_encode(['error' => 'Database connection failed: ' . $e->getMessage()]);
+                exit;
+            }
         }
-        $this->db->set_charset("utf8mb4");
+        return $this->db;
     }
 
-    // --- REPOSITORIES ---
+    // =========================================================================
+    //  REPOSITORIES
+    // =========================================================================
 
     public function getUserRepo(): UserRepository
     {
-        if (!isset($this->services['userRepo'])) {
-            $this->services['userRepo'] = new UserRepository($this->db);
-        }
+        if (!isset($this->services['userRepo']))
+            $this->services['userRepo'] = new UserRepository($this->getDb());
         return $this->services['userRepo'];
     }
 
-    // Add other repos here (getItemRepo, etc.)
+    public function getItemRepo(): ItemRepository
+    {
+        if (!isset($this->services['itemRepo']))
+            $this->services['itemRepo'] = new ItemRepository($this->getDb());
+        return $this->services['itemRepo'];
+    }
 
-    // --- SERVICES ---
+    public function getBidRepo(): BidRepository
+    {
+        if (!isset($this->services['bidRepo']))
+            $this->services['bidRepo'] = new BidRepository($this->getDb());
+        return $this->services['bidRepo'];
+    }
+
+    public function getRatingRepo(): RatingRepository
+    {
+        if (!isset($this->services['ratingRepo']))
+            $this->services['ratingRepo'] = new RatingRepository($this->getDb());
+        return $this->services['ratingRepo'];
+    }
+
+    public function getNotifRepo(): NotificationRepository
+    {
+        if (!isset($this->services['notifRepo']))
+            $this->services['notifRepo'] = new NotificationRepository($this->getDb());
+        return $this->services['notifRepo'];
+    }
+
+    public function getWatchlistRepo(): WatchlistRepository
+    {
+        if (!isset($this->services['watchlistRepo']))
+            $this->services['watchlistRepo'] = new WatchlistRepository($this->getDb());
+        return $this->services['watchlistRepo'];
+    }
+
+    public function getConvoRepo(): ConversationRepository
+    {
+        if (!isset($this->services['convoRepo']))
+            $this->services['convoRepo'] = new ConversationRepository($this->getDb());
+        return $this->services['convoRepo'];
+    }
+
+    public function getMessageRepo(): MessageRepository
+    {
+        if (!isset($this->services['messageRepo']))
+            $this->services['messageRepo'] = new MessageRepository($this->getDb());
+        return $this->services['messageRepo'];
+    }
+
+    public function getReportRepo(): ReportRepository
+    {
+        if (!isset($this->services['reportRepo']))
+            $this->services['reportRepo'] = new ReportRepository($this->getDb());
+        return $this->services['reportRepo'];
+    }
+
+    // =========================================================================
+    //  SERVICES (Inject Repositories)
+    // =========================================================================
+
+    public function getNotifService(): NotificationService
+    {
+        if (!isset($this->services['notifService']))
+            $this->services['notifService'] = new NotificationService($this->getNotifRepo());
+        return $this->services['notifService'];
+    }
 
     public function getAuthService(): AuthService
     {
-        if (!isset($this->services['authService'])) {
+        if (!isset($this->services['authService']))
             $this->services['authService'] = new AuthService($this->getUserRepo());
-        }
         return $this->services['authService'];
     }
 
-    // --- CONTROLLERS ---
+    public function getChatService(): ChatService
+    {
+        if (!isset($this->services['chatService'])) {
+            $this->services['chatService'] = new ChatService(
+                $this->getConvoRepo(),
+                $this->getMessageRepo(),
+                $this->getItemRepo()
+            );
+        }
+        return $this->services['chatService'];
+    }
+
+    public function getUserService(): UserService
+    {
+        if (!isset($this->services['userService'])) {
+            $this->services['userService'] = new UserService(
+                $this->getUserRepo(),
+                $this->getItemRepo(),
+                $this->getBidRepo(),
+                $this->getRatingRepo(),
+                $this->getWatchlistRepo()
+            );
+        }
+        return $this->services['userService'];
+    }
+
+    public function getAuctionService(): AuctionService
+    {
+        if (!isset($this->services['auctionService'])) {
+            $this->services['auctionService'] = new AuctionService(
+                $this->getItemRepo(),
+                $this->getBidRepo(),
+                $this->getUserRepo(),
+                $this->getWatchlistRepo(),
+                $this->getNotifService(),
+                $this->getChatService()
+            );
+        }
+        return $this->services['auctionService'];
+    }
+
+    public function getModerationService(): ModerationService
+    {
+        if (!isset($this->services['modService'])) {
+            $this->services['modService'] = new ModerationService(
+                $this->getReportRepo(),
+                $this->getUserRepo(),
+                $this->getItemRepo()
+            );
+        }
+        return $this->services['modService'];
+    }
+
+    // =========================================================================
+    //  CONTROLLERS (Inject Services)
+    // =========================================================================
 
     public function getAuthController(): AuthController
     {
-        if (!isset($this->services['authController'])) {
+        if (!isset($this->services['authController']))
             $this->services['authController'] = new AuthController($this->getAuthService());
-        }
         return $this->services['authController'];
     }
 
-    // Add other controllers here (getAuctionController, etc.)
+    public function getUserController(): UserController
+    {
+        if (!isset($this->services['userController'])) {
+            $this->services['userController'] = new UserController(
+                $this->getUserService(),
+                $this->getAuthService(),
+                $this->getNotifService(),
+                $this->getChatService()
+            );
+        }
+        return $this->services['userController'];
+    }
+
+    public function getAuctionController(): AuctionController
+    {
+        if (!isset($this->services['auctionController']))
+            $this->services['auctionController'] = new AuctionController($this->getAuctionService());
+        return $this->services['auctionController'];
+    }
+
+    public function getChatController(): ChatController
+    {
+        if (!isset($this->services['chatController']))
+            $this->services['chatController'] = new ChatController($this->getChatService());
+        return $this->services['chatController'];
+    }
+
+    public function getAdminController(): AdminController
+    {
+        if (!isset($this->services['adminController']))
+            $this->services['adminController'] = new AdminController($this->getModerationService());
+        return $this->services['adminController'];
+    }
 }

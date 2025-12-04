@@ -2,21 +2,9 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/enum/ReportType.php';
+require_once __DIR__ . '/enum/ReportStatus.php';
 
-enum ReportType : string 
-{
-    case User = 'User';
-    case Item = 'Item';
-}
-
-
-enum ReportStatus : string 
-{
-    case Pending = 'Pending';
-    case InReview = 'In Review';
-    case Resolved = 'Resolved';
-    case Dismissed = 'Dismissed';
-}
 
 class Report 
 {

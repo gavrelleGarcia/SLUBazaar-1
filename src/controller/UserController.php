@@ -91,14 +91,12 @@ class UserController extends BaseController
         try {
             $messages = [];
 
-            // Update Name
             if (!empty($input['fname']) && !empty($input['lname'])) {
                 $this->userService->updateProfileName($userId, $input['fname'], $input['lname']);
                 $_SESSION['fname'] = $input['fname'];
                 $messages[] = "Name updated.";
             }
 
-            // Change Password
             if (!empty($input['new_password'])) {
                 $this->authService->changePassword(
                     $userId,

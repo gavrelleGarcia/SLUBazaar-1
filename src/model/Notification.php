@@ -2,27 +2,7 @@
 
 declare(strict_types=1);
 
-
-/**
- * Defines the allowed types of notifications in the system.
- * This prevents typos like "OUT_BID" or "outbid" in the code.
- */
-enum NotificationType: string
-{
-    // Bidder Events
-    case OUTBID = 'OUTBID';
-    case WIN = 'WIN';
-    case WATCHLIST = 'WATCHLIST';
-
-    // Seller Events
-    case SOLD = 'SOLD';
-    case EXPIRED = 'EXPIRED';
-    case COMPLETE = 'COMPLETE'; // Transaction finished/Verified
-
-    // System Events
-    case SYSTEM = 'SYSTEM';
-    case WARNING = 'WARNING'; // Admin actions (bans/removals)
-}
+require_once __DIR__ . '/enum/NotificationType.php';
 
 class Notification 
 {
@@ -30,11 +10,11 @@ class Notification
     private int $userId;
     private string $notifTitle;
     private string $content;
-    private string $notifType;
+    private NotificationType $notifType;
     private DateTimeImmutable $notifTime;
 
     public function __construct(?int $notifId, int $userId, string $notifTitle, string $content, 
-                                string $notifType, DateTimeImmutable $notifTime) 
+                                NotificationType $notifType, DateTimeImmutable $notifTime) 
     {
         $this->notifId = $notifId;
         $this->userId = $userId;
@@ -53,7 +33,7 @@ class Notification
             (int)$notification['user_id'], 
             $notification['notif_title'], 
             $notification['content'], 
-            $notification['notif_type'], 
+            NotificationType::from($notification['notif_type']), 
             new DateTimeImmutable($notification['notif_time'])
         );
     }
@@ -111,13 +91,13 @@ class Notification
     }
 
 
-    public function getNotifType() : string 
+    public function getNotifType() : NotificationType 
     {
         return $this->notifType;
     }
 
 
-    public function setNotifType(string $notifType) : self 
+    public function setNotifType(NotificationType $notifType) : self 
     {
         $this->notifType = $notifType;
         return $this;

@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-// Import Repository dependencies
 require_once __DIR__ . '/../repository/UserRepository.php';
 require_once __DIR__ . '/../model/User.php';
+require_once __DIR__ . '/../model/enum/Role.php';
+
 
 class AuthService
 {

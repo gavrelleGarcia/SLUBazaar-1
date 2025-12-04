@@ -2,19 +2,9 @@
 
 declare(strict_types=1);
 
-enum AccountStatus : string
-{
-    case Active = 'Active';
-    case Unverified = 'Unverified';
-    case Banned = 'Banned';
-}
+require_once __DIR__ . '/enum/AccountStatus.php';
+require_once __DIR__ . '/enum/Role.php';
 
-
-enum Role : string 
-{
-    case Admin = 'Admin';
-    case Member = 'Member';
-}
 
 class User 
 {

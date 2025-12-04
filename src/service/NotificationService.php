@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../repository/NotificationRepository.php';
 require_once __DIR__ . '/../model/Notification.php';
-require_once __DIR__ . '/../model/NotificationType.php';
+require_once __DIR__ . '/../model/enum/NotificationType.php';
 
 class NotificationService
 {
@@ -37,7 +37,7 @@ class NotificationService
             $userId, 
             $title, 
             $content, 
-            $type->value, 
+            $type, 
             new DateTimeImmutable()
         );
 

@@ -10,8 +10,8 @@ require_once __DIR__ . '/../service/ChatService.php';
 
 require_once __DIR__ . '/../model/Item.php';
 require_once __DIR__ . '/../model/Bid.php';
-// require_once __DIR__ . '/../model/Item.php'; TODO: MAKE ALL THE ENUMS IN A SEPARATE STAND-ALONE FILE
-require_once __DIR__ . '/../model/Category.php';   
+require_once __DIR__ . '/../model/enum/Category.php';  
+require_once __DIR__ . '/../model/enum/ItemStatus.php';
 require_once __DIR__ . '/../dto/request/SearchItemsRequestDTO.php'; 
 
 class AuctionService
