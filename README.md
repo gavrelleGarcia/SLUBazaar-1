@@ -26,7 +26,7 @@ Open your terminal and go to your XAMPP `htdocs` folder:
 
 ```bash
 cd C:\xampp\htdocs
-git clone <your-repo-url> SLUBAZAAR
+git clone https://github.com/Hendrizzzz/SLUBazaar SLUBAZAAR
 ```
 
 ---
