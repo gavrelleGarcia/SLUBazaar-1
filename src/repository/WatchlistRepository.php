@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-require_once '../model/Watchlist.php';
-require_once '../dto/WatchlistDetailsDTO.php';
-
+require_once __DIR__ . '/../model/Watchlist.php';
+require_once __DIR__ . '/../dto/response/Marketplace/ItemCardDTO.php';
 
 class WatchlistRepository 
 {
@@ -18,8 +17,32 @@ class WatchlistRepository
 
 
     /**
-     * This will be triggered if the user adds an item to his watchlist when viewing the full details
-     * of the item
+     * Checks if a user has already watchlisted a specific item.
+     */
+    public function isWatching(int $userId, int $itemId): bool
+    {
+        $query = "SELECT watchlist_id FROM watchlist WHERE user_id = ? AND item_id = ? LIMIT 1";
+        $statement = $this->db->prepare($query);
+
+        if (!$statement)
+            throw new Exception("Error preparing isWatching query: " . $this->db->error);
+
+        $statement->bind_param('ii', $userId, $itemId);
+
+        if (!$statement->execute())
+            throw new Exception("Failed to check isWatching: " . $statement->error);
+
+        $result = $statement->get_result();
+        $exists = $result->num_rows > 0;
+        $statement->close();
+
+        return $exists;
+    }
+
+
+
+    /**
+     * Adds an item to the watchlist.
      */
     public function addWatchlist(Watchlist $watchlist) : void
     {
@@ -41,10 +64,32 @@ class WatchlistRepository
     }
 
 
+
     /**
-     * This will be triggered if the user removes a watchlist item in his 'My Watchlist' section
+     * Removes an item from watchlist based on User ID and Item ID (Used for Toggle).
      */
-    public function removeWatchlist(int $watchlistId) : void
+    public function removeWatchlistByUserAndItemId(int $userId, int $itemId): void
+    {
+        $query = "DELETE FROM watchlist WHERE user_id = ? AND item_id = ?";
+        $statement = $this->db->prepare($query);
+
+        if (!$statement)
+            throw new Exception("Error preparing removeWatchlistByUserAndItemId: " . $this->db->error);
+
+        $statement->bind_param('ii', $userId, $itemId);
+
+        if (!$statement->execute())
+            throw new Exception("Failed to remove watchlist item: " . $statement->error);
+
+        $statement->close();
+    }
+
+
+
+    /**
+     * Removes a watchlist entry by its Primary Key (Used for 'Delete' button in profile).
+     */
+    public function removeWatchlistId(int $watchlistId) : void
     {
         $query = "DELETE from watchlist WHERE watchlist_id = ?";
         $statement = $this->db->prepare($query);
@@ -59,6 +104,7 @@ class WatchlistRepository
 
         $statement->close();
     }
+
 
 
 
@@ -82,10 +128,12 @@ class WatchlistRepository
 
         $watchlists = [];
         foreach ($rows as $row) 
-            $watchlists[] = ItemRowDTO::fromArray($row); // TODO : convert to WatchlistItemDTO.php in the service 
+            $watchlists[] = ItemCardDTO::fromArray($row); 
         
         return $watchlists;
     }
+
+
 
 
 
@@ -128,7 +176,4 @@ class WatchlistRepository
                     -- Secondary Sort: Items ending soonest appear at the top
                     i.auction_end ASC;";
     }
-
-
-
 }

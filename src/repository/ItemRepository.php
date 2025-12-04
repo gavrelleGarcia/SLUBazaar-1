@@ -78,6 +78,38 @@ class ItemRepository
     }
 
 
+    /**
+     * Fetches all image URLs for a specific item.
+     * Required for ItemDetailsDTO.
+     * 
+     * @return string[] Array of image URL strings
+     */
+    public function getImageUrls(int $itemId): array
+    {
+        $query = "SELECT image_url FROM item_image WHERE item_id = ? ORDER BY image_id ASC";
+        $statement = $this->db->prepare($query);
+
+        if (!$statement)
+            throw new Exception("Error preparing getImageUrls: " . $this->db->error);
+
+        $statement->bind_param('i', $itemId);
+
+        if (!$statement->execute())
+            throw new Exception("Failed to get image URLs: " . $statement->error);
+
+        $result = $statement->get_result();
+        $rows = $result->fetch_all(MYSQLI_ASSOC);
+        $statement->close();
+
+        // Transform [['image_url' => 'a.jpg'], ...] into ['a.jpg', ...]
+        $urls = [];
+        foreach ($rows as $row) 
+            $urls[] = $row['image_url'];
+
+        return $urls;
+    }
+
+
 
     public function getToHandoverItemsByUserId(int $userId) : array
     {
@@ -350,6 +382,87 @@ class ItemRepository
         return $result->fetch_assoc();
     }
 
+
+    /**
+     * Batch insert images for a specific item.
+     * @param int $itemId The new item ID
+     * @param array $imagePaths Array of strings (e.g. ['uploads/items/123_a.jpg', ...])
+     */
+    public function addItemImages(int $itemId, array $imagePaths): void
+    {
+        if (empty($imagePaths)) return;
+
+        $query = "INSERT INTO item_image (item_id, image_url) VALUES (?, ?)";
+        $statement = $this->db->prepare($query);
+
+        if (!$statement) {
+            throw new Exception("Error preparing addItemImages: " . $this->db->error);
+        }
+
+        foreach ($imagePaths as $path) {
+            $statement->bind_param('is', $itemId, $path);
+            if (!$statement->execute()) {
+                throw new Exception("Failed to save image path: " . $statement->error);
+            }
+        }
+
+        $statement->close();
+    }
+
+
+
+
+
+    /**
+     * WORKER: Find expired active items.
+     * Uses "FOR UPDATE" to lock rows (concurrency safety).
+     */
+    public function findExpiredActiveItems(int $limit = 50): array
+    {
+        $query = "SELECT item_id, title, seller_id 
+                  FROM item 
+                  WHERE item_status = 'Active' 
+                  AND auction_end <= NOW() 
+                  LIMIT ? 
+                  FOR UPDATE"; // Row Locking "FOR UPDATE"
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param('i', $limit);
+        $stmt->execute();
+        
+        $result = $stmt->get_result();
+        $items = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        return $items; 
+    }
+
+
+
+    public function updateAuctionEnd(int $itemId, DateTimeImmutable $newEnd): void
+    {
+        $query = "UPDATE item SET auction_end = ? WHERE item_id = ?";
+        $stmt = $this->db->prepare($query);
+        $dateStr = $newEnd->format('Y-m-d H:i:s');
+        $stmt->bind_param('si', $dateStr, $itemId);
+        $stmt->execute();
+    }
+
+    public function updateCurrentBid(int $itemId, float $amount): void
+    {
+        $query = "UPDATE item SET current_bid = ? WHERE item_id = ?";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param('di', $amount, $itemId);
+        $stmt->execute();
+    }
+
+    public function markAsAwaitingMeetup(int $itemId, int $buyerId, float $price, string $code): void
+    {
+        $query = "UPDATE item SET item_status = 'Awaiting Meetup', buyer_id = ?, current_bid = ?, meetup_code = ?, date_sold = NOW() WHERE item_id = ?";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param('idsi', $buyerId, $price, $code, $itemId);
+        $stmt->execute();
+    }
 
 
 

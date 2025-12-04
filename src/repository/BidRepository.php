@@ -124,30 +124,40 @@ class BidRepository
 
 
     /**
-     * This should have a name for who bid
+     * Used for the Item Details Page.
+     * Returns a list of bids with the User's name, sorted by highest amount.
      */
     public function getBidsByItemId(int $itemId) : array
     {
-            $query = "SELECT * FROM bid WHERE `item_id` = ?";
-            $statement = $this->db->prepare($query);
+        $query = "SELECT 
+                    b.bid_amount, 
+                    b.bid_timestamp, 
+                    u.fname, 
+                    u.lname 
+                  FROM bid b
+                  JOIN user u ON b.bidder_id = u.user_id
+                  WHERE b.item_id = ?
+                  ORDER BY b.bid_amount DESC";
 
-            if (!$statement)
-                throw new Exception("There was an error preparing the getBidsByItemId query: " . $this->db->error);
+        $statement = $this->db->prepare($query);
 
-            $statement->bind_param('i', $itemId);
+        if (!$statement)
+            throw new Exception("Error preparing getBidsByItemId: " . $this->db->error);
 
-            if (!$statement->execute())
-                throw new Exception("Failed to do getBidsByItemId: " . $statement->error);
+        $statement->bind_param('i', $itemId);
 
-            $results = $statement->get_result();
-            $rows = $results->fetch_all(MYSQLI_ASSOC);
-            $statement->close();
+        if (!$statement->execute())
+            throw new Exception("Failed to getBidsByItemId: " . $statement->error);
 
-            $bidsOfItem = [];
-            foreach($rows as $row) 
-                $bidsOfItem[] = Bid::fromArray($row);
+        $results = $statement->get_result();
+        $rows = $results->fetch_all(MYSQLI_ASSOC);
+        $statement->close();
 
-            return $bidsOfItem;
+        $dtos = [];
+        foreach($rows as $row) 
+            $dtos[] = ItemPageBidDTO::fromArray($row);
+
+        return $dtos;
     }
 
 
@@ -172,6 +182,30 @@ class BidRepository
         if (!$row)
             return null;
         return Bid::fromArray($row);
+    }
+
+
+
+    public function getHighestBidderId(int $itemId): ?int
+    {
+        $query = "SELECT bidder_id FROM bid WHERE item_id = ? ORDER BY bid_amount DESC LIMIT 1";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param('i', $itemId);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $row = $res->fetch_assoc();
+        return $row ? (int)$row['bidder_id'] : null;
+    }
+
+    public function getHighestBidAmount(int $itemId): float
+    {
+        $query = "SELECT bid_amount FROM bid WHERE item_id = ? ORDER BY bid_amount DESC LIMIT 1";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param('i', $itemId);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $row = $res->fetch_assoc();
+        return $row ? (float)$row['bid_amount'] : 0.0;
     }
 
 

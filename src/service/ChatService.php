@@ -45,6 +45,9 @@ class ChatService
         return $convo->getConversationId();
     }
 
+
+
+
     /**
      * Requirement: A.2.2 (Profile - Messages Tab)
      * Returns the list of conversations for the sidebar.
@@ -54,6 +57,8 @@ class ChatService
         return $this->convoRepo->getConversationsByUserId($userId);
     }
 
+
+
     /**
      * Requirement: A.2.6 (Detailed Page) -> Load Chat History
      */
@@ -62,6 +67,9 @@ class ChatService
         // Security Check: Is this user part of the conversation?
         return $this->messageRepo->getMessagesByConversationId($conversationId, $userId);
     }
+
+
+
 
     /**
      * Requirement: A.2.13 (Messaging)
@@ -93,6 +101,8 @@ class ChatService
         $this->messageRepo->addMessage($message);
     }
 
+
+    
     /**
      * Requirement: A.3.4 (Meetup Verification)
      * Seller enters code -> Item becomes Sold -> Chat Archived.

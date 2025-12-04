@@ -24,32 +24,34 @@ class NotificationService
         return $this->notifRepo->getNotificationsByUserId($userId);
     }
 
+
+
+
     /**
      * Internal Helper: Constructs the Entity and passes it to the Repo.
-     * This bridges the gap between raw data (strings) and the Repo (Objects).
      */
     private function sendNotification(int $userId, string $title, string $content, NotificationType $type): void
     {
-        // 1. Create the Domain Object
-        // We pass 'null' for ID because it hasn't been saved to DB yet.
         $notification = new Notification(
             null, 
             $userId, 
             $title, 
             $content, 
-            $type->value, // Pass the Enum
+            $type->value, 
             new DateTimeImmutable()
         );
 
-        // 2. Pass the Object to the Repository
         $this->notifRepo->addNotification($notification);
     }
 
-    // =========================================================================
-    //  BUSINESS LOGIC METHODS (Public API)
-    //  Controllers and other Services call these methods.
-    // =========================================================================
 
+
+
+  // THE SERVICES WILL BE THE ONE TO CALL THIS METHOD
+  // ============================================================
+
+
+    
     /**
      * Requirement A.2.11: Notify user they were outbid.
      */
@@ -62,6 +64,8 @@ class NotificationService
             NotificationType::OUTBID
         );
     }
+
+
 
     /**
      * Requirement A.4.4: Notify the winner when auction ends.
@@ -76,6 +80,8 @@ class NotificationService
         );
     }
 
+
+
     /**
      * Requirement A.3.3: Notify the seller when item is sold.
      */
@@ -88,6 +94,8 @@ class NotificationService
             NotificationType::SOLD
         );
     }
+
+
 
     /**
      * Requirement A.3.5: Notify seller if item expired with no bids.
@@ -102,6 +110,8 @@ class NotificationService
         );
     }
 
+
+
     /**
      * Requirement A.3.4: Notify user when transaction is verified/complete.
      */
@@ -115,6 +125,8 @@ class NotificationService
         );
     }
 
+
+
     /**
      * Requirement B.9: Notify user if Admin removed their item.
      */
@@ -127,6 +139,8 @@ class NotificationService
             NotificationType::WARNING
         );
     }
+
+
 
     /**
      * Requirement A.2.10: Watchlist Ending Soon

@@ -27,26 +27,27 @@ class ModerationService
     /**
      * Requirement A.2.16: User submits a report
      */
-    public function submitReport(int $reporterId, ?int $targetUserId, ?int $targetItemId, string $reportType, string $reason, string $desc): int
+    public function submitReport(int $reporterId, ?int $targetUserId, ?int $targetItemId, string $reason, string $desc): int
     {
         if (empty($reason) || empty($desc))
             throw new Exception("Reason and Description are required.");
 
-        if ($reportType === 'User' && !$targetUserId) 
-            throw new Exception("Target User ID is required for User reports.");
+        if ($targetUserId === null && $targetItemId === null)
+            throw new Exception("You must specify a target (User or Item) to report.");
 
-        if ($reportType === 'Item' && !$targetItemId) 
-            throw new Exception("Target Item ID is required for Item reports.");
+        if ($targetUserId !== null && $targetItemId !== null)
+            throw new Exception("Invalid request: Cannot report both User and Item simultaneously.");
 
+        $typeEnum = ($targetUserId !== null) ? ReportType::User : ReportType::Item;
         $report = new Report(
             null, 
             $reporterId,
             $targetUserId,
             $targetItemId,
-            ReportType::from($reportType),
+            $typeEnum, 
             $reason,
             $desc,
-            ReportStatus::from('Pending'), 
+            ReportStatus::Pending, 
             null,     
             new DateTimeImmutable()
         );
@@ -62,7 +63,7 @@ class ModerationService
      * Requirement B.3: Admin views pending reports
      * This logic usually resides in Repo queries, but Service exposes it.
      */
-    public function getPendingReports(string $type = 'All'): array
+    public function getPendingReports(): array
     {
         return $this->reportRepo->getReportsByStatus('Pending');
     }
@@ -72,6 +73,7 @@ class ModerationService
     /**
      * Requirement B.5: Admin resolves a report
      * Action: Updates status and optionally bans user or removes item.
+     * TODO: THINK ABOUT THIS FIRST
      */
     public function resolveReport(int $reportId, string $resolution, string $adminNotes, string $actionType): void
     {

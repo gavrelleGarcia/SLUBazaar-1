@@ -3,40 +3,36 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../repository/UserRepository.php';
+require_once __DIR__ . '/../repository/ItemRepository.php';
+require_once __DIR__ . '/../repository/BidRepository.php';
 require_once __DIR__ . '/../repository/RatingRepository.php';
-require_once __DIR__ . '/../repository/BidRepository.php'; // Required for "My Bids" tab
+require_once __DIR__ . '/../repository/WatchlistRepository.php'; 
 require_once __DIR__ . '/../model/Rating.php';
 
 class UserService
 {
     private UserRepository $userRepo;
-    private RatingRepository $ratingRepo;
+    private ItemRepository $itemRepo;
     private BidRepository $bidRepo;
+    private RatingRepository $ratingRepo;
+    private WatchlistRepository $watchlistRepo;
 
     public function __construct(
         UserRepository $userRepo,
+        ItemRepository $itemRepo,
+        BidRepository $bidRepo,
         RatingRepository $ratingRepo,
-        BidRepository $bidRepo
+        WatchlistRepository $watchlistRepo
     ) {
         $this->userRepo = $userRepo;
-        $this->ratingRepo = $ratingRepo;
+        $this->itemRepo = $itemRepo;
         $this->bidRepo = $bidRepo;
+        $this->ratingRepo = $ratingRepo;
+        $this->watchlistRepo = $watchlistRepo;
     }
 
     /**
-     * Requirement A.2.3: Edit Profile (Name)
-     */
-    public function updateProfileName(int $userId, string $firstName, string $lastName): void
-    {
-        if (empty(trim($firstName)) || empty(trim($lastName))) {
-            throw new Exception("First name and last name cannot be empty.");
-        }
-
-        $this->userRepo->updateName($userId, trim($firstName), trim($lastName));
-    }
-
-    /**
-     * Requirement A.2.2: Fetch User Profile Data (Header Info)
+     * Requirement A.2.2: Profile Header Info
      */
     public function getProfileInfo(int $userId): ?User
     {
@@ -48,51 +44,85 @@ class UserService
     }
 
     /**
-     * Requirement A.2.2: Profile Tabs - "My Ratings" (Received)
+     * Requirement A.2.3: Edit Profile (Name)
      */
-    public function getReceivedRatings(int $userId): array
+    public function updateProfileName(int $userId, string $firstName, string $lastName): void
     {
-        return $this->ratingRepo->getReceivedRatings($userId);
+        if (empty(trim($firstName)) || empty(trim($lastName))) {
+            throw new Exception("First name and last name cannot be empty.");
+        }
+        $this->userRepo->updateName($userId, trim($firstName), trim($lastName));
+    }
+
+    // /**
+    //  * CORE LOGIC: Fetches the specific list based on the Tab and Sub-filter.
+    //  * This maps directly to your "Role-Based Grouping" design.
+    //  * 
+    //  * @param string $mainTab 'selling' | 'buying' | 'reputation'
+    //  * @param string $subFilter 'handover', 'active', 'sold', 'unsold', 'claim', etc.
+    //  */
+    // public function getProfileTabContent(int $userId, string $mainTab, string $subFilter): array
+    // {
+    //     return match ($mainTab) {
+    //         // TAB A: Selling Center (My Inventory)
+    //         'selling' => $this->getSellingContent($userId, $subFilter),
+            
+    //         // TAB B: Buying Activity (My Bids)
+    //         'buying' => $this->getBuyingContent($userId, $subFilter),
+            
+    //         // TAB C: Reputation (My Reviews)
+    //         'reputation' => $this->getReputationContent($userId, $subFilter),
+            
+    //         default => []
+    //     };
+    // }
+
+    // --- Internal Helpers to route to the specific Repo methods you created ---
+
+    public function getSellingContent(int $userId, string $subFilter): array
+    {
+        return match ($subFilter) {
+            'handover' => $this->itemRepo->getToHandoverItemsByUserId($userId),
+            'active'   => $this->itemRepo->getActiveItemsByUserId($userId),
+            'sold'     => $this->itemRepo->getSoldItemsByUserId($userId),
+            'unsold'   => $this->itemRepo->getUnsoldItemsByUserId($userId), // Expired/Cancelled
+            default    => []
+        };
+    }
+
+    public function getBuyingContent(int $userId, string $subFilter): array
+    {
+        return match ($subFilter) {
+            'claim'     => $this->bidRepo->getToClaimBidsByUserId($userId),
+            'active'    => $this->bidRepo->getActiveBidsByUserId($userId),
+            'history'   => $this->bidRepo->getPastBidsByUserId($userId),
+            'watchlist' => $this->watchlistRepo->getWatchlistByUserId($userId),
+            default     => []
+        };
+    }
+
+    public function getReputationContent(int $userId, string $subFilter): array
+    {
+        return match ($subFilter) {
+            'received' => $this->ratingRepo->getReceivedRatings($userId),
+            'given'    => $this->ratingRepo->getGivenRatings($userId),
+            default    => []
+        };
     }
 
     /**
-     * Requirement A.2.2: Profile Tabs - "Given Ratings"
-     */
-    public function getGivenRatings(int $userId): array
-    {
-        return $this->ratingRepo->getGivenRatings($userId);
-    }
-
-    /**
-     * Requirement A.2.2: Profile Tabs - "Bid History"
-     * NOTE: Requires BidRepository to implement `getBidsByUserId($id)`
-     */
-    public function getUserBidHistory(int $userId): array
-    {
-        return $this->bidRepo->getPastBidsByUserId($userId);
-    }
-
-    /**
-     * Requirement A.2.12: Rate a transaction partner.
-     * Logic: Adds rating AND updates the user's average score immediately.
+     * Requirement A.2.12: Submit a Rating
      */
     public function submitRating(int $raterId, int $rateeId, int $itemId, int $stars, string $comment): void
     {
-        // 1. Validation
-        if ($stars < 1 || $stars > 5) {
+        if ($stars < 1 || $stars > 5) 
             throw new Exception("Rating must be between 1 and 5 stars.");
-        }
 
-        if ($raterId === $rateeId) {
+        if ($raterId === $rateeId) 
             throw new Exception("You cannot rate yourself.");
-        }
 
-        // Optional: Check if transaction exists and is completed?
-        // Usually handled by UI context, but could be validated via ItemRepo here.
-
-        // 2. Create Rating Object
         $rating = new Rating(
-            null, // ID generated by DB
+            null, 
             $itemId,
             $raterId,
             $rateeId,
@@ -101,11 +131,7 @@ class UserService
             new DateTimeImmutable()
         );
 
-        // 3. Save Rating
         $this->ratingRepo->addRating($rating);
-
-        // 4. Update the User's Average Score (Requirement A.2.12)
-        // This ensures the profile shows the new average immediately without recalculating on every view.
         $this->userRepo->updateAverageRating($rateeId);
     }
 }

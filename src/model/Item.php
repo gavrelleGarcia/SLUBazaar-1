@@ -49,7 +49,8 @@ class Item
     public function __construct(?int $itemId, int $sellerId, string $title, string $description, 
                                 float $startingBid, float $currentBid, DateTimeImmutable $createdAt, 
                                 DateTimeImmutable $auctionStart, DateTimeImmutable $auctionEnd, 
-                                ItemStatus $itemStatus, ?string $meetUpCode, Category $category)
+                                ItemStatus $itemStatus, ?string $meetUpCode, Category $category,
+                                ?DateTimeImmutable $dateSold)
     {
         $this->itemId = $itemId; 
         $this->sellerId = $sellerId;
@@ -63,6 +64,7 @@ class Item
         $this->itemStatus = $itemStatus;
         $this->meetUpCode = $meetUpCode;
         $this->category = $category;
+        $this->dateSold = $dateSold;
     }
 
 
@@ -81,7 +83,8 @@ class Item
             new DateTimeImmutable($item['auction_end']),
             ItemStatus::from($item['item_status']), 
             $item['meetup_code'] ?? null, 
-            Category::from($item['category'])
+            Category::from($item['category']),
+            new DateTimeImmutable($item['date_sold'])
         );
     }
 
@@ -301,6 +304,24 @@ class Item
     public function setCreatedAt(DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of dateSold
+     */
+    public function getDateSold(): ?DateTimeImmutable
+    {
+        return $this->dateSold;
+    }
+
+    /**
+     * Set the value of dateSold
+     */
+    public function setDateSold(?DateTimeImmutable $dateSold): self
+    {
+        $this->dateSold = $dateSold;
 
         return $this;
     }
