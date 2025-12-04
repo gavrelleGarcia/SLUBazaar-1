@@ -2,14 +2,17 @@
 
 declare(strict_types=1);
 
-// 1. Load All Class Definitions (Order generally doesn't matter here if just defining)
-// Ideally use Composer autoload, but manual require works:
+// Enums
+require_once __DIR__ . '/model/enum/AccountStatus.php';
+require_once __DIR__ . '/model/enum/Category.php';
+require_once __DIR__ . '/model/enum/ItemStatus.php';
+require_once __DIR__ . '/model/enum/NotificationType.php';
+require_once __DIR__ . '/model/enum/ConversationStatus.php';
+require_once __DIR__ . '/model/enum/ReportStatus.php';
+require_once __DIR__ . '/model/enum/ReportType.php';
+require_once __DIR__ . '/model/enum/Role.php';
 
-// Models & Enums
-require_once __DIR__ . '/model/AccountStatus.php';
-require_once __DIR__ . '/model/Category.php';
-require_once __DIR__ . '/model/ItemStatus.php';
-require_once __DIR__ . '/model/NotificationType.php';
+// Models
 require_once __DIR__ . '/model/User.php';
 require_once __DIR__ . '/model/Item.php';
 require_once __DIR__ . '/model/Bid.php';
@@ -18,15 +21,28 @@ require_once __DIR__ . '/model/Conversation.php';
 require_once __DIR__ . '/model/Message.php';
 require_once __DIR__ . '/model/Report.php';
 require_once __DIR__ . '/model/Watchlist.php';
+require_once __DIR__ . '/model/Notification.php';
 
 // DTOs
+require_once __DIR__ . '/dto/internal/BidRowDTO.php';
+require_once __DIR__ . '/dto/internal/ItemRowDTO.php';
 require_once __DIR__ . '/dto/request/SearchItemsRequestDTO.php';
 require_once __DIR__ . '/dto/response/Marketplace/ItemCardDTO.php';
 require_once __DIR__ . '/dto/response/Marketplace/ItemDetailsDTO.php';
 require_once __DIR__ . '/dto/response/Marketplace/ItemPageBidDTO.php';
 require_once __DIR__ . '/dto/response/Admin/AdminUserTableRowDTO.php';
 require_once __DIR__ . '/dto/response/Notification/NotificationDTO.php';
-// ... ensure all other DTOs are loaded
+require_once __DIR__ . '/dto/response/Messaging/MessagesDTO.php';
+require_once __DIR__ . '/dto/response/Messaging/ConversationDTO.php';
+require_once __DIR__ . '/dto/response/Profile/ActiveBidCardDTO.php';
+require_once __DIR__ . '/dto/response/Profile/ClaimItemCardDTO.php';
+require_once __DIR__ . '/dto/response/Profile/HistoryItemCardDTO.php';
+require_once __DIR__ . '/dto/response/Profile/RatingCardDTO.php';
+require_once __DIR__ . '/dto/response/Profile/SellerListingCardDTO.php';
+require_once __DIR__ . '/dto/response/Profile/SoldItemCardDTO.php';
+require_once __DIR__ . '/dto/response/Profile/ToHandoverItemCardDTO.php';
+require_once __DIR__ . '/dto/response/Profile/UnsoldItemCardDTO.php';
+require_once __DIR__ . '/dto/response/Profile/WatchlistItemDTO.php';
 
 // Repositories
 require_once __DIR__ . '/repository/UserRepository.php';
@@ -153,6 +169,9 @@ class Container
         return $this->services['reportRepo'];
     }
 
+
+
+    
     // =========================================================================
     //  SERVICES (Inject Repositories)
     // =========================================================================

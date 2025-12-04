@@ -146,4 +146,18 @@ class ModerationService
             'reported_users'    => $reportStats['user_reports']
         ];
     }
+
+
+
+    public function getAllUsers(): array 
+    {
+        return $this->userRepo->getAllUsers(); // Ensure Repo has this
+    }
+
+    public function getAllListings(): array 
+    {
+        // We want EVERYTHING (Active, Sold, Removed) for Admin view
+        // Ensure Repo has a method that selects without 'WHERE status=Active'
+        return $this->itemRepo->getAllItemsForAdmin(); 
+    }
 }

@@ -411,6 +411,27 @@ class ItemRepository
 
 
 
+    public function getAllItemsForAdmin() : array
+    {
+        $query = 'SELECT * FROM item';
+        $statement = $this->db->prepare($query);
+        if (!$statement)
+            throw new Exception("There was an error preparing the getAllItemsForAdmin query : " . $this->db->error);
+
+        if (!$statement->execute())
+            throw new Exception("Failed to getAllItemsForAdmin : " . $statement->error);
+
+        $result = $statement->get_result();
+        $rows = $result->fetch_all(MYSQLI_ASSOC);
+
+        $items = [];
+        foreach($rows as $row)
+            $items[] = $row;
+        return $items;
+    }
+
+
+
 
 
     /**

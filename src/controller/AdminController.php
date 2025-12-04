@@ -42,7 +42,7 @@ class AdminController extends BaseController
 
         try {
             $stats = $this->modService->getDashboardMetrics();
-            require __DIR__ . '/../view/admin/dashboard.php';
+            require __DIR__ . '/../view/admin/dashboard.php'; // PLACEHOLDER
         } catch (Exception $e) {
             echo "Error loading dashboard: " . $e->getMessage();
         }
@@ -65,9 +65,49 @@ class AdminController extends BaseController
             if ($this->isAjax()) 
                 $this->jsonResponse($reports);
             else 
-                require __DIR__ . '/../view/admin/reports.php';
+                require __DIR__ . '/../view/admin/reports.php'; // PLACEHOLDER
         } catch (Exception $e) {
             $this->errorResponse($e->getMessage());
+        }
+    }
+
+
+
+
+    /**
+     * Route: index.php?action=admin_users
+     * Requirement: B.6 (Search/View Profiles)
+     */
+    public function viewUsers(): void
+    {
+        $this->requireAdmin();
+
+        // doesn't support searching and filtering here
+        $users = $this->modService->getAllUsers(); 
+
+        if ($this->isAjax()) {
+            $this->jsonResponse($users);
+        } else {
+            require __DIR__ . '/../view/admin/users.php'; // You need to create this view
+        }
+    }
+
+    /**
+     * Route: index.php?action=admin_listings
+     * Requirement: B.8 (Search/Manage Listings)
+     */
+    public function viewListings(): void
+    {
+        $this->requireAdmin();
+
+        // Similar logic: Fetch all items (Active, Suspended, etc)
+        // You need to add 'getAllListings()' to ModerationService
+        $items = $this->modService->getAllListings();
+
+        if ($this->isAjax()) {
+            $this->jsonResponse($items);
+        } else {
+            require __DIR__ . '/../view/admin/listings.php'; // You need to create this view
         }
     }
 
