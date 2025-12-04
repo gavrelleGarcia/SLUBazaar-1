@@ -239,14 +239,4 @@ Clear session:
 http://slubazaar.local/index.php?action=logout
 ```
 
----
 
-If you want, I can also generate:
-
-✅ Professional project logo
-✅ Admin README
-✅ API documentation
-✅ UML Diagram
-✅ Project PDF for submission
-
-Just tell me!
