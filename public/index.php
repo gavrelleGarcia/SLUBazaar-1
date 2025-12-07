@@ -20,7 +20,7 @@ try {
     /** @var Container $container */
     $container = require_once __DIR__ . '/../src/bootstrap.php';
 
-} catch (Exception $e) {
+} catch (Throwable $e) {
     http_response_code(200); // Changed to 200 to pass Render Health Check
     die(json_encode(['error' => 'Bootstrap Error: ' . $e->getMessage()]));
 }
@@ -155,7 +155,7 @@ try {
             break;
     }
 
-} catch (Exception $e) {
+} catch (Throwable $e) {
     // =========================================================
     // GLOBAL ERROR HANDLING
     // =========================================================
