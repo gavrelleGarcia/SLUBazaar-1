@@ -94,13 +94,13 @@ class Container
                     $this->dbConfig['host'],
                     $this->dbConfig['user'],
                     $this->dbConfig['pass'],
-                    $this->dbConfig['name']
+                    $this->dbConfig['name'],
+                    (int) $this->dbConfig['port']
                 );
                 $this->db->set_charset("utf8mb4");
             } catch (mysqli_sql_exception $e) {
-                http_response_code(500);
-                echo json_encode(['error' => 'Database connection failed: ' . $e->getMessage()]);
-                exit;
+                // Re-throw so index.php can handle it (force 200 or 500)
+                throw $e;
             }
         }
         return $this->db;
