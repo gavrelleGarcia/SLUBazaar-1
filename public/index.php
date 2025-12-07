@@ -3,9 +3,6 @@
 declare(strict_types=1);
 
 session_start();
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
-error_reporting(E_ALL);
 
 // CORS Headers (Crucial for your AJAX fetch calls to work smoothly)
 header("Access-Control-Allow-Origin: *");
@@ -23,8 +20,8 @@ try {
     /** @var Container $container */
     $container = require_once __DIR__ . '/../src/bootstrap.php';
 
-} catch (Throwable $e) {
-    http_response_code(200); // Changed to 200 to pass Render Health Check
+} catch (Exception $e) {
+    http_response_code(500);
     die(json_encode(['error' => 'Bootstrap Error: ' . $e->getMessage()]));
 }
 
@@ -158,7 +155,7 @@ try {
             break;
     }
 
-} catch (Throwable $e) {
+} catch (Exception $e) {
     // =========================================================
     // GLOBAL ERROR HANDLING
     // =========================================================
@@ -166,7 +163,7 @@ try {
     // Log the error for the developer
     error_log($e->getMessage());
 
-    http_response_code(200); // Changed to 200 to pass Render Health Check
+    http_response_code(500);
 
     // If it's an AJAX request, return clean JSON so JS doesn't crash
     if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
