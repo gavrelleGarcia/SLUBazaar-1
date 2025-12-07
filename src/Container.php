@@ -31,7 +31,7 @@ require_once __DIR__ . '/dto/response/Marketplace/ItemCardDTO.php';
 require_once __DIR__ . '/dto/response/Marketplace/ItemDetailsDTO.php';
 require_once __DIR__ . '/dto/response/Marketplace/ItemPageBidDTO.php';
 require_once __DIR__ . '/dto/response/Admin/AdminUserTableRowDTO.php';
-require_once __DIR__ . '/dto/response/Notification/NotificationDTO.php';
+require_once __DIR__ . '/dto/response/notification/NotificationDTO.php';
 require_once __DIR__ . '/dto/response/Messaging/MessagesDTO.php';
 require_once __DIR__ . '/dto/response/Messaging/ConversationDTO.php';
 require_once __DIR__ . '/dto/response/Profile/ActiveBidCardDTO.php';
@@ -74,26 +74,26 @@ require_once __DIR__ . '/controller/AdminController.php';
 
 class Container
 {
-    private array $services = []; 
+    private array $services = [];
     private ?mysqli $db = null;
-    
-    private array $dbConfig; 
+
+    private array $dbConfig;
 
     public function __construct(array $dbConfig)
     {
         $this->dbConfig = $dbConfig;
     }
 
-    
+
     public function getDb(): mysqli
     {
         if ($this->db === null) {
             mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
             try {
                 $this->db = new mysqli(
-                    $this->dbConfig['host'], 
-                    $this->dbConfig['user'], 
-                    $this->dbConfig['pass'], 
+                    $this->dbConfig['host'],
+                    $this->dbConfig['user'],
+                    $this->dbConfig['pass'],
                     $this->dbConfig['name']
                 );
                 $this->db->set_charset("utf8mb4");
@@ -179,7 +179,7 @@ class Container
 
 
 
-    
+
     // =========================================================================
     //  SERVICES (Inject Repositories)
     // =========================================================================
@@ -253,7 +253,7 @@ class Container
 
 
 
-    
+
 
     // =========================================================================
     //  CONTROLLERS (Inject Services)
