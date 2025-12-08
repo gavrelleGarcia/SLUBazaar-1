@@ -2,9 +2,6 @@
 
 declare(strict_types=1);
 
-
-
-
 class AuthService
 {
     private UserRepository $userRepo;
@@ -29,14 +26,17 @@ class AuthService
         if (!$this->isSluEmail($email))
             throw new Exception("Registration is restricted to @slu.edu.ph emails only.");
 
-        if ($this->userRepo->findByEmail($email))
-            throw new Exception("This email is already registered.");
+        // === BYPASS DATABASE CHECK FOR NOW ===
+        // if ($this->userRepo->findByEmail($email))
+        //    throw new Exception("This email is already registered.");
 
         $passwordHash = password_hash($password, PASSWORD_DEFAULT); 
         $user = $this->constructUser($fname, $lname, $email, $passwordHash);
-        return $this->userRepo->addUser($user);
+        
+        // === MOCK RETURN ID ===
+        // return $this->userRepo->addUser($user);
+        return 1; // Simulate success
     }
-
 
     private function constructUser(string $fname, string $lname, string $email, string $passwordHash) : User 
     {
@@ -54,14 +54,29 @@ class AuthService
         );
     }
 
-
-
     /**
      * Requirement A.2.1: Login
      * Verifies credentials and returns user data array.
      */
     public function login(string $email, string $password): array
     {
+        // === TEMPORARY DATABASE BYPASS ===
+        // We simulate a successful login for ANY email/password for now.
+        // This structure perfectly mimics what the database WOULD return.
+        
+        // Hardcode a mock "User Array"
+        $mockUser = [
+            'user_id' => 1,
+            'email' => $email, // Use the email they typed
+            'role' => 'Member', // Default to Member
+            'fname' => 'TestUser',
+            'lname' => 'Lastname',
+            'account_status' => 'Active',
+            'password_hash' => password_hash($password, PASSWORD_DEFAULT) // Fake hash so verify passes
+        ];
+
+        // --- DATABASE LOGIC (COMMENTED OUT FOR LATER) ---
+        /*
         $user = $this->userRepo->findByEmail($email);
 
         if (!$user)
@@ -72,15 +87,13 @@ class AuthService
 
         if ($user['account_status'] === 'Banned')
             throw new Exception("This account has been banned. Contact Admin.");
-
-        if ($user['account_status'] === 'Unverified') {
-            // Let them pass first since I did not yet implement email verification
-        }
-
+            
         return $user;
+        */
+
+        // Return mock data immediately
+        return $mockUser;
     }
-
-
 
     /**
      * Requirement A.2.3: Change Password
@@ -93,6 +106,8 @@ class AuthService
         if (strlen($newPassword) < 6)
             throw new Exception("Password must be at least 6 characters.");
 
+        // === BYPASS DB CHECK ===
+        /*
         $user = $this->userRepo->getUserById($userId);
         if (!$user)
             throw new Exception("User not found.");
@@ -102,9 +117,8 @@ class AuthService
 
         $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
         $this->userRepo->updatePassword($userId, $newHash);
+        */
     }
-
-    
     
     public function startUserSession(array $user): void
     {
@@ -118,8 +132,6 @@ class AuthService
         
         $_SESSION['last_activity'] = time();
     }
-
-    
 
     public function logout(): void
     {
@@ -136,7 +148,6 @@ class AuthService
         session_destroy();
     }
 
-
     /**
      * Helper: Get current User ID (or throw error if not logged in)
      * Used by other Services/Controllers
@@ -147,11 +158,12 @@ class AuthService
             session_start();
         }
 
+        // === TEMPORARY: If no session, auto-login as ID 1 ===
         if (!isset($_SESSION['user_id'])) {
-            throw new Exception("Unauthorized. Please login.");
+            // throw new Exception("Unauthorized. Please login.");
+            return 1; 
         }
 
-        // Optional: Check timeout here
         if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 1800)) {
             $this->logout();
             throw new Exception("Session expired.");
@@ -161,11 +173,9 @@ class AuthService
         return $_SESSION['user_id'];
     }
 
-    
-    
-
     private function isSluEmail(string $email): bool
     {
+        // Optional: you can comment this out too if you want to test with 'admin@test.com'
         return (bool) preg_match('/^[a-zA-Z0-9._%+-]+@slu\.edu\.ph$/i', $email);
     }
 }
