@@ -31,3 +31,4 @@ Thumbs.db
 error.log
 access.log
 php_errors.log
+fiveserver.config.js
