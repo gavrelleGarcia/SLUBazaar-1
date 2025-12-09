@@ -30,10 +30,11 @@ class UserController extends BaseController
         $userId = $this->requireLogin();
 
         try {
-            // Get Header Info (Name, Avatar, Rating)
+            // Get Header Info
             $user = $this->userService->getProfileInfo($userId);
-            // Render View
-            require __DIR__ . '/../view/profile.php'; // PLACEHOLDER ###################################
+            
+            // Pass $user to the view
+            require __DIR__ . '/../view/profile.php'; 
         } catch (Exception $e) {
             $this->authService->logout();
             header("Location: index.php?action=login");

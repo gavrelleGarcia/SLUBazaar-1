@@ -52,5 +52,6 @@
     "phpGetterSetter.short": true,
     "phpGettersSetters.generatePHPDoc": true,
     "phpGettersSetters.templatesDir": "",
-    "intelephense.environment.phpVersion": "8.2.0"
+    "intelephense.environment.phpVersion": "8.2.0",
+    "liveServer.settings.port": 5501
 }

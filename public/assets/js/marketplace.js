@@ -1,138 +1,29 @@
-// hard coded mock data
-const mockItems = [
-    {
-        id: 1,
-        title: "Seiko 5 SNK809 (Used)",
-        price: 4500,
-        seller: "JohnDoe",
-        image: "https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&q=80&w=400",
-        status: "Winning", // winning, outbid, sold, won, active
-        endTime: "Dec 12, 05:00 PM"
-    },
-    {
-        id: 2,
-        title: "Keychron K2 Mechanical",
-        price: 3200,
-        seller: "JaneSmith",
-        image: "https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&q=80&w=400",
-        status: "Outbid",
-        endTime: "Dec 10, 08:30 AM"
-    },
-    {
-        id: 3,
-        title: "Calculus Textbook (7th Ed)",
-        price: 800,
-        seller: "Me", // Logic: isOwner
-        image: "https://images.unsplash.com/photo-1585338447937-7082f8fc763d?auto=format&fit=crop&q=80&w=400",
-        status: "Sold",
-        endTime: "Closed: Dec 05"
-    },
-    {
-        id: 4,
-        title: "Nike Air Max 90",
-        price: 5100,
-        seller: "ShoeLover",
-        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=400",
-        status: "Won",
-        endTime: "Won on: Dec 01"
-    },
-    {
-        id: 4,
-        title: "Nike Air Max 90",
-        price: 5100,
-        seller: "ShoeLover",
-        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=400",
-        status: "Won",
-        endTime: "Won on: Dec 01"
-    },
-    {
-        id: 4,
-        title: "Nike Air Max 90",
-        price: 5100,
-        seller: "ShoeLover",
-        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=400",
-        status: "Won",
-        endTime: "Won on: Dec 01"
-    },
-    {
-        id: 4,
-        title: "Nike Air Max 90",
-        price: 5100,
-        seller: "ShoeLover",
-        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=400",
-        status: "Won",
-        endTime: "Won on: Dec 01"
-    },
-    {
-        id: 4,
-        title: "Nike Air Max 90",
-        price: 5100,
-        seller: "ShoeLover",
-        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=400",
-        status: "Won",
-        endTime: "Won on: Dec 01"
-    },
-    {
-        id: 4,
-        title: "Nike Air Max 90",
-        price: 5100,
-        seller: "ShoeLover",
-        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=400",
-        status: "Won",
-        endTime: "Won on: Dec 01"
-    },
-    {
-        id: 4,
-        title: "Nike Air Max 90",
-        price: 5100,
-        seller: "ShoeLover",
-        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=400",
-        status: "Won",
-        endTime: "Won on: Dec 01"
-    },
-    {
-        id: 4,
-        title: "Nike Air Max 90",
-        price: 5100,
-        seller: "ShoeLover",
-        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=400",
-        status: "Won",
-        endTime: "Won on: Dec 01"
-    },
-    {
-        id: 4,
-        title: "Nike Air Max 90",
-        price: 5100,
-        seller: "ShoeLover",
-        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=400",
-        status: "Won",
-        endTime: "Won on: Dec 01"
-    },
-    {
-        id: 4,
-        title: "Nike Air Max 90",
-        price: 5100,
-        seller: "ShoeLover",
-        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=400",
-        status: "Won",
-        endTime: "Won on: Dec 01"
-    }
-];
+// SLUBazaar/public/assets/js/marketplace.js
 
 document.addEventListener('DOMContentLoaded', () => {
     loadAuctions();
     setupTabs();
+    // Start the timer update loop for real-time countdowns
+    setInterval(updateTimers, 1000); 
+    updateTimers(); // Run once immediately
 });
 
-// --- 2. DATA FETCHING (Simulating DB Connection) ---
+// --- 2. DATA FETCHING ---
+/**
+ * Fetches active auctions using the AuctionController AJAX endpoint.
+ */
 async function fetchAuctions() {
-    // TODO: Later, replace this with: 
-    // const response = await fetch('index.php?action=api_get_items');
-    // return await response.json();
+    // Calls index.php?action=marketplace. Controller defaults to status='Active' and sort='newest'.
+    const url = 'index.php?action=marketplace'; 
     
-    return new Promise((resolve) => {
-        setTimeout(() => resolve(mockItems), 300); // Simulate network delay
-    });
+    // apiFetch is defined in utils.js
+    const data = await apiFetch(url); 
+    
+    if (data && data.success === false) {
+        console.error("Failed to fetch auctions:", data.error);
+        return [];
+    }
+    return data || []; // Expects an array of ItemCardDTOs
 }
 
 // --- 3. RENDERING LOGIC ---
@@ -141,7 +32,12 @@ async function loadAuctions() {
     container.innerHTML = '<p style="text-align:center;">Loading...</p>';
 
     const items = await fetchAuctions();
-    container.innerHTML = ''; 
+    container.innerHTML = ''; // Clear loading
+
+    if (!items || items.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:50px; color:#94a3b8;"><i class="fa-solid fa-store-slash" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i><p>No active listings found.</p></div>';
+        return;
+    }
 
     items.forEach(item => {
         const cardHTML = createCardHTML(item);
@@ -149,48 +45,44 @@ async function loadAuctions() {
     });
 }
 
+/**
+ * Generates the HTML for a single item card based on ItemCardDTO structure.
+ */
 function createCardHTML(item) {
+    // Destructuring DTO data from ItemCardDTO
+    const title = item.title;
+    const img = item.image || '/assets/img/default_image.png'; // Fallback
+    const price = item.price.amount;
+    const priceLabel = item.price.label;
+    const timerLabel = item.timer.label;
     
-
     let borderClass = '';
     let badgeHTML = '';
-    let priceColor = '#333';
-    let btnHTML = '';
-
-    // Status Logic Switch
-    switch(item.status) {
-        case 'Winning':
-            badgeHTML = `<span class="status-badge badge-winning">Winning</span>`;
-            btnHTML = `<button class="btn-action btn-bid open-modal-btn" onclick="openModal('${item.title}', '${item.price}', '${item.seller}')">Bid Again</button>`;
-            break;
-        case 'Outbid':
-            badgeHTML = `<span class="status-badge badge-outbid">Outbid</span>`;
-            btnHTML = `<button class="btn-action btn-bid open-modal-btn" onclick="openModal('${item.title}', '${item.price}', '${item.seller}')">Bid Higher</button>`;
-            break;
-        case 'Sold':
-            borderClass = 'border-blue';
-            badgeHTML = `<span class="status-badge badge-sold">Sold</span>`;
-            btnHTML = `<button class="btn-action btn-message"><i class="fa-regular fa-comment-dots"></i> Message Buyer</button>`;
-            break;
-        case 'Won':
-            borderClass = 'border-green';
-            badgeHTML = `<span class="status-badge badge-won">You Won!</span>`;
-            priceColor = '#16a34a';
-            btnHTML = `<button class="btn-action btn-message"><i class="fa-regular fa-comment-dots"></i> Message Seller</button>`;
-            break;
-        default:
-            btnHTML = `<button class="btn-action btn-bid" onclick="openModal('${item.title}', '${item.price}', '${item.seller}')">Bid Now</button>`;
+    
+    // Status Logic
+    let statusText = item.status;
+    if (statusText === 'Pending') {
+        badgeHTML = `<span class="status-badge badge-closed">Pending</span>`; 
+        borderClass = 'opacity-75';
+    } else {
+        badgeHTML = `<span class="status-badge badge-winning">Active</span>`; 
     }
+    
+    // Button action redirects to the item details page
+    const btnHTML = `<button class="btn-action btn-bid" onclick="openItemDetails(${item.itemId})">View / Bid</button>`;
 
     return `
-        <div class="item-card ${borderClass}">
+        <div class="item-card ${borderClass}" data-item-id="${item.itemId}">
             <div class="card-img-wrapper">
-                <img src="${item.image}" alt="${item.title}">
+                <img src="${img}" alt="${title}">
                 ${badgeHTML}
             </div>
-            <h4>${item.title}</h4>
-            <div class="item-price" style="color: ${priceColor};">₱ ${item.price.toLocaleString()}</div>
-            <div class="item-timer">${item.endTime}</div>
+            <h4>${title}</h4>
+            <div class="item-price">₱ ${parseFloat(price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+            <div class="item-timer">
+                <span class="timer-label">${timerLabel}</span> 
+                <span class="timer-value" data-target="${item.timer.target}"></span>
+            </div>
             <div style="margin-top: auto; width: 100%;">
                 ${btnHTML}
             </div>
@@ -198,40 +90,77 @@ function createCardHTML(item) {
     `;
 }
 
-// --- 4. UI INTERACTION (Tabs & Modal) ---
+// --- 4. UI INTERACTION (Tabs & Modal/Redirect) ---
 function setupTabs() {
     const tabs = document.querySelectorAll('.d-tab');
     tabs.forEach(tab => {
         tab.addEventListener('click', function() {
             tabs.forEach(t => t.classList.remove('active'));
             this.classList.add('active');
-            // Here you would normally filter the 'mockItems' array and re-render
+            
+            // Handle Tab Redirections to profile page as implemented in other views
+            const tabText = this.innerText.trim();
+            if(tabText.includes('Live Auctions')) {
+                 loadAuctions(); // Reload active items
+            }
+            else if(tabText.includes('My Bids')) {
+                window.location.href = 'index.php?action=profile&tab=buying&filter=active';
+            }
+            else if(tabText.includes('My Watchlist')) {
+                window.location.href = 'index.php?action=profile&tab=buying&filter=watchlist';
+            }
         });
     });
 }
 
-// Modal Logic
+// Function to redirect to the dedicated item details page
+window.openItemDetails = function(itemId) {
+    // This is the intended behavior since ItemDetailsDTO exists
+    window.location.href = `index.php?action=item_details&id=${itemId}`;
+}
+
+
+// --- 5. Countdown Timer Logic ---
+function updateTimers() {
+    document.querySelectorAll('.timer-value').forEach(timerElement => {
+        const targetIso = timerElement.getAttribute('data-target');
+        if (!targetIso) return;
+        
+        const targetDate = new Date(targetIso);
+        const now = new Date();
+        let diff = targetDate.getTime() - now.getTime();
+        
+        const labelElement = timerElement.previousElementSibling;
+        const isEndsIn = labelElement && labelElement.innerText.includes('Ends in');
+        
+        let display = '';
+
+        if (diff < 0) {
+            if (isEndsIn) {
+                 display = 'Auction Ended';
+            } else {
+                 display = 'Auction Started';
+            }
+        } else {
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            if (days > 0) {
+                display = `${days}d ${hours}h ${minutes}m`;
+            } else {
+                display = `${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+            }
+        }
+        
+        timerElement.innerText = display;
+    });
+}
+
+
+// Keeping the original modal functions as stubs because the HTML file contains the modal structure.
 const modal = document.getElementById('item-modal');
-const modalTitle = document.getElementById('modal-title');
-const modalPrice = document.getElementById('modal-price');
-const modalNext = document.getElementById('modal-next');
-const modalSeller = document.getElementById('modal-seller');
-
-// Made global so HTML onclick can access it
-window.openModal = function(title, price, seller) {
-    modalTitle.innerText = title;
-    modalPrice.innerText = parseInt(price).toLocaleString();
-    modalNext.innerText = (parseInt(price) + 100).toLocaleString();
-    modalSeller.innerText = seller;
-    modal.classList.add('active');
-}
-
-window.closeModal = function() {
-    modal.classList.remove('active');
-}
-
-window.onclick = function(event) {
-    if (event.target == modal) {
-        closeModal();
-    }
-}
+window.openModal = function() { modal.classList.add('active'); } // Not used by the cards anymore
+window.closeModal = function() { modal.classList.remove('active'); }
+window.onclick = function(event) { if (event.target == modal) { closeModal(); } }

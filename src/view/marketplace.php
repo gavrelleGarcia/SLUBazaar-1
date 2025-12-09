@@ -8,7 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Khula:wght@300;400;600;700&family=Lalezar&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <link rel="stylesheet" href="/public/assets/css/user/marketplace.css">
+    <link rel="stylesheet" href="/assets/css/user/marketplace.css">
+    <link rel="stylesheet" href="/assets/css/global.css">
 </head>
 <body>
 
@@ -29,9 +30,9 @@
 
     <div class="main-wrapper">
         <div class="site-branding">
-            <img src="/public/assets/img/SLU Logo.png" alt="slu_logo">
+            <img src="/assets/img/SLU Logo.png" alt="slu_logo">
             <div class="branding-text">
-                <h1>Marketplace</h1>
+                <h1>SLU Bazaar</h1>
                 <p>The official marketplace of<br>Saint Louis University.</p>
             </div>
         </div>
@@ -98,7 +99,8 @@
         </div>
     </div>
 
-    <script src="/public/assets/js/marketplace.js"></script>
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/marketplace.js?v=<?php echo time(); ?>"></script>
 
 </body>
 </html>

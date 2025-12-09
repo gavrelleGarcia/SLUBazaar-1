@@ -45,6 +45,8 @@ class Item
 
     public static function fromArray(array $item) : self 
     {
+        $dateSold = $item['date_sold'] ? new DateTimeImmutable($item['date_sold']) : null;
+        
         return new self(
             (int)$item['item_id'], 
             (int)$item['seller_id'], 
@@ -58,7 +60,7 @@ class Item
             ItemStatus::from($item['item_status']), 
             $item['meetup_code'] ?? null, 
             Category::from($item['category']),
-            new DateTimeImmutable($item['date_sold'])
+            $dateSold // Use the fixed nullable value
         );
     }
 

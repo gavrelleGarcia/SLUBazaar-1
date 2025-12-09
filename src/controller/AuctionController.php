@@ -54,13 +54,16 @@ class AuctionController extends BaseController
             $itemDetails = $this->auctionService->getItemDetailsView($itemId, $userId);
 
             if (!$itemDetails) {
-                require __DIR__ . '/../view/404.php'; 
+                http_response_code(404);
+                echo "<h1>404 Not Found</h1><p>The item you requested does not exist.</p>";
                 return;
             }
 
-            require __DIR__ . '/../view/item_details.php'; // PLACEHOLDER #############################################
-        } catch (Exception $e) {
-            require __DIR__ . '/../view/404.php'; // PLACEHOLDER ############################## IDK ABOUT THIS, IF IT NEEDS NEW PAGE OR WHAT
+            require __DIR__ . '/../view/item_details.php';
+
+        } catch (Throwable $e) { // CHANGED: Exception -> Throwable
+            http_response_code(500);
+            echo "<h1>500 Internal Server Error</h1><p>Error processing item request: " . htmlspecialchars($e->getMessage()) . "</p>";
         }
     }
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 enum AccountStatus : string
 {
-    case Active = 'Active';
-    case Unverified = 'Unverified';
-    case Banned = 'Banned';
+    case Active = 'active';
+    case Unverified = 'unverified';
+    case Banned = 'banned';
 }

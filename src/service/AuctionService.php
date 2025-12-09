@@ -60,6 +60,11 @@ class AuctionService
         $bids = $this->bidRepo->getBidsByItemId($itemId);
         $isWatching = $this->watchlistRepo->isWatching($currentUserId, $itemId);
 
+        if (!$seller) {
+        // Option A: Throw a clear error
+        throw new Exception("Data Error: The seller for this item (ID: {$item->getSellerId()}) does not exist.");
+        }
+
         return ItemDetailsDTO::create(
             $item,
             $seller,
