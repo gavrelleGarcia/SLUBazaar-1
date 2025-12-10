@@ -51,7 +51,7 @@ async function loadAuctions() {
 function createCardHTML(item) {
     // Destructuring DTO data from ItemCardDTO
     const title = item.title;
-    const img = item.image || '/assets/img/default_image.png'; // Fallback
+    const img = '/assets/' + item.image;
     const price = item.price.amount;
     const priceLabel = item.price.label;
     const timerLabel = item.timer.label;
