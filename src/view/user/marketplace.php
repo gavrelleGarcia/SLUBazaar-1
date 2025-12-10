@@ -22,7 +22,7 @@
             <a href="index.php?action=marketplace" class="active" title="Home"><i class="fa-solid fa-house"></i></a>
             <a href="index.php?action=create_listing" title="New Listing"><i class="fa-solid fa-circle-plus"></i></a>
             <a href="index.php?action=chat" title="Messages"><i class="fa-regular fa-paper-plane"></i></a>
-      <a href="index.php?action=logout" title="Logout" style="margin-top: 20px; color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i></a>
+            <a href="index.php?action=logout" title="Logout" style="margin-top: 20px; color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i></a>
         </div>
         <div class="bottom-user">
              <img src="https://ui-avatars.com/api/?name=User&background=random" alt="Me">

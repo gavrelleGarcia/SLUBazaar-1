@@ -51,7 +51,7 @@ async function loadAuctions() {
 function createCardHTML(item) {
     // Destructuring DTO data from ItemCardDTO
     const title = item.title;
-    const img = '/assets/' + item.image;
+    const img = item.image;
     const price = item.price.amount;
     const priceLabel = item.price.label;
     const timerLabel = item.timer.label;
@@ -104,10 +104,10 @@ function setupTabs() {
                  loadAuctions(); // Reload active items
             }
             else if(tabText.includes('My Bids')) {
-                window.location.href = 'index.php?action=profile&tab=buying&filter=active';
+                window.location.href = 'index.php?action=marketplace'; // TODO
             }
             else if(tabText.includes('My Watchlist')) {
-                window.location.href = 'index.php?action=profile&tab=buying&filter=watchlist';
+                window.location.href = 'index.php?action=marketplace'; // TODO
             }
         });
     });

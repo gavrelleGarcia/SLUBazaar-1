@@ -36,7 +36,7 @@ class AuctionController extends BaseController
         if ($this->isAjax())
             $this->jsonResponse($items); 
         else 
-            require __DIR__ . '/../view/marketplace.php';  // PLACEHOLDER ##################################################
+            require __DIR__ . '/../view/user/marketplace.php';  // PLACEHOLDER ##################################################
     }
 
 
@@ -59,7 +59,7 @@ class AuctionController extends BaseController
                 return;
             }
 
-            require __DIR__ . '/../view/item_details.php';
+            require __DIR__ . '/../view/user/item_details.php';
 
         } catch (Throwable $e) { // CHANGED: Exception -> Throwable
             http_response_code(500);
@@ -108,6 +108,7 @@ class AuctionController extends BaseController
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
+                $input = $_POST;
                 // We access $_POST directly here because file uploads are multipart/form-data
                 // BaseController::getInput() might return JSON or POST array, but files are in $_FILES
                 $input = $_POST; 
@@ -145,7 +146,7 @@ class AuctionController extends BaseController
                 $this->errorResponse($e->getMessage());
             }
         } else {
-            require __DIR__ . '/../view/create_listing.php'; // PLACEHOLDER ########################################
+            require __DIR__ . '/../view/user/create_listing.php'; // PLACEHOLDER ########################################
         }
     }
 

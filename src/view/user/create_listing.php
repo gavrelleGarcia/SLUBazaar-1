@@ -22,6 +22,7 @@
             <a href="index.php?action=marketplace" title="Home"><i class="fa-solid fa-house"></i></a>
             <a href="index.php?action=create_listing" class="active" title="New Listing"><i class="fa-solid fa-circle-plus"></i></a>
             <a href="index.php?action=chat" title="Messages"><i class="fa-regular fa-paper-plane"></i></a>
+      <a href="index.php?action=logout" title="Logout" style="margin-top: 20px; color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i></a>
         </div>
         <div class="bottom-user">
              <img src="https://ui-avatars.com/api/?name=User&background=random" alt="Me">
@@ -35,12 +36,21 @@
                 <h2>New Listing</h2>
             </div>
             
-            <form onsubmit="mockSubmit(event)" class="form-content">
+            <form onsubmit="mockSubmit(event)" class="form-content" enctype="multipart/form-data">
                 <div class="form-layout-grid">
                     <div class="left-col">
                         <div class="form-row">
                             <label>Title:</label>
                             <input type="text" name="title" class="input-field" placeholder="E.g. Vintage Leather Bag" required>
+                        </div>
+                        <div class="form-row">
+                        <label>Category:</label>
+                        <select name="category" class="input-field" required>
+                            <option value="" disabled selected>Select Category</option>
+                            <option value="Textbooks">Textbooks</option>
+                            <option value="Stationery">Stationery</option>
+                            <option value="Electronics">Electronics</option>
+                            </select>
                         </div>
                         <div class="form-row">
                             <label>Description:</label>
