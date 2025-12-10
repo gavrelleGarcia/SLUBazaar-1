@@ -36,7 +36,7 @@
                 <h2>New Listing</h2>
             </div>
             
-            <form onsubmit="mockSubmit(event)" class="form-content" enctype="multipart/form-data">
+            <form method="POST" class="form-content" enctype="multipart/form-data">
                 <div class="form-layout-grid">
                     <div class="left-col">
                         <div class="form-row">
@@ -47,9 +47,13 @@
                         <label>Category:</label>
                         <select name="category" class="input-field" required>
                             <option value="" disabled selected>Select Category</option>
-                            <option value="Textbooks">Textbooks</option>
-                            <option value="Stationery">Stationery</option>
-                            <option value="Electronics">Electronics</option>
+                            <?php
+                                // retrieve categories from the enum file
+                                require_once __DIR__ . '/../../model/enum/Category.php';
+                                foreach (Category::cases() as $category) {
+                                    echo "<option value=\"{$category->value}\">{$category->value}</option>";
+                                }
+                                ?>
                             </select>
                         </div>
                         <div class="form-row">
@@ -63,7 +67,7 @@
                             </div>
                             <div class="form-row" style="flex: 1;">
                                 <label>Date End:</label>
-                                <input type="datetime-local" name="auction_end" class="input-field" required>
+                                <input type="datetime-local" name="end_time" class="input-field" required>
                             </div>
                         </div>
                     </div>

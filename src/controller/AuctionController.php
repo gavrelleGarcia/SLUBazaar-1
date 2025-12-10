@@ -108,18 +108,21 @@ class AuctionController extends BaseController
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
-                $input = $_POST;
                 // We access $_POST directly here because file uploads are multipart/form-data
-                // BaseController::getInput() might return JSON or POST array, but files are in $_FILES
                 $input = $_POST; 
 
                 // Format Files array properly
                 // PHP $_FILES structure is weird for multiple files: ['name'][0], ['name'][1]
                 // We normalize it into an array of file objects
                 $files = [];
-                if (!empty($_FILES['images']['name'][0])) {
+                
+                // FIX: Check if the array exists, rather than checking if index [0] is empty.
+                if (isset($_FILES['images']) && is_array($_FILES['images']['name'])) {
                     $count = count($_FILES['images']['name']);
+                    
                     for ($i = 0; $i < $count; $i++) {
+                        // We simply pass all entries to the service. 
+                        // The Service's loop checks for UPLOAD_ERR_OK, so empty slots will be skipped there safely.
                         $files[] = [
                             'name'     => $_FILES['images']['name'][$i],
                             'type'     => $_FILES['images']['type'][$i],
@@ -140,10 +143,13 @@ class AuctionController extends BaseController
                     $files
                 );
 
-                $this->jsonResponse(['success' => true, 'item_id' => $newId]);
+                header("Location: index.php?action=marketplace&success=listing_created&id={$newId}");
+                exit;
 
             } catch (Exception $e) {
-                $this->errorResponse($e->getMessage());
+                // In production, you might want to log this error and redirect with an error query param
+                echo "Error: " . $e->getMessage();
+                exit;
             }
         } else {
             require __DIR__ . '/../view/user/create_listing.php'; // PLACEHOLDER ########################################

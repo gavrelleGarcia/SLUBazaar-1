@@ -70,7 +70,7 @@ class ItemCardDTO implements JsonSerializable
         return new self(
             (int) $row['item_id'],
             $row['title'],
-            $row['image_url'] ?? null,
+            $row['image_url'] ?? '/assets/img/default-image.png',
             $status,
             $bidCount,
             $displayPrice,

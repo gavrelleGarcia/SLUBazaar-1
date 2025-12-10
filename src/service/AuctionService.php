@@ -182,7 +182,8 @@ class AuctionService
      */
     private function processImageUploads(int $itemId, array $files): array
     {
-        $targetDir = __DIR__ . '/../public/assets/uploads/items/'; // Adjust path as needed
+        $targetDir = __DIR__ . '/../../public/assets/uploads/items/'; // Adjust path as needed
+        
         
         if (!is_dir($targetDir))
             mkdir($targetDir, 0777, true);
@@ -208,7 +209,7 @@ class AuctionService
             $targetPath = $targetDir . $newFileName;
 
             if (move_uploaded_file($file['tmp_name'], $targetPath)) 
-                $savedPaths[] = 'uploads/items/' . $newFileName;
+                $savedPaths[] = 'assets/uploads/items/' . $newFileName;
         }
 
         return $savedPaths;
