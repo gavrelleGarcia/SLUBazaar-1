@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - SLU Bazaar</title>
-    
+
     <!-- CSS -->
-    <link rel="stylesheet" href="/public/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="/assets/css/auth.css">
 </head>
+
 <body>
 
     <div class="auth-container">
@@ -44,9 +46,10 @@
 
     <!-- JS -->
     <!-- Load the wrapper first -->
-    <script src="/public/assets/js/utils.js"></script>
+    <script src="/assets/js/utils.js"></script>
     <!-- Load the specific page logic -->
-    <script src="/public/assets/js/auth.js"></script>
+    <script src="/assets/js/auth.js"></script>
 
 </body>
+
 </html>
