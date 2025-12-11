@@ -116,7 +116,6 @@ class AuctionController extends BaseController
                 // We normalize it into an array of file objects
                 $files = [];
                 
-                // FIX: Check if the array exists, rather than checking if index [0] is empty.
                 if (isset($_FILES['images']) && is_array($_FILES['images']['name'])) {
                     $count = count($_FILES['images']['name']);
                     
