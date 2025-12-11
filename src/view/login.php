@@ -6,7 +6,7 @@
     <title>Login - SLU Bazaar</title>
     
     <!-- CSS -->
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/public/assets/css/style.css">
     <link rel="stylesheet" href="/assets/css/auth.css">
 </head>
 <body>
@@ -44,9 +44,9 @@
 
     <!-- JS -->
     <!-- Load the wrapper first -->
-    <script src="/assets/js/utils.js"></script> 
+    <script src="/public/assets/js/utils.js"></script>
     <!-- Load the specific page logic -->
-    <script src="/assets/js/auth.js"></script>
+    <script src="/public/assets/js/auth.js"></script>
 
 </body>
 </html>

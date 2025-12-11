@@ -38,6 +38,7 @@ if (!isset($itemDetails)) {
 
     <div class="main-wrapper">
         <!-- TODO -->
+         <h1>hello</h1>
     </div>
 
     <script src="/assets/js/utils.js"></script>

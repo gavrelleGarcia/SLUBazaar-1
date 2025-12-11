@@ -96,6 +96,7 @@ class Container
                     $this->dbConfig['pass'],
                     $this->dbConfig['name'],
                     (int) $this->dbConfig['port']
+//                    (int) ($this->dbConfig['port']??3306)
                 );
                 $this->db->set_charset("utf8mb4");
             } catch (mysqli_sql_exception $e) {

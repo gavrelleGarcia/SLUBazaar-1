@@ -19,8 +19,8 @@ class UserRepository
      */
     public function addUser(User $user) : int
     {
-        $query = "INSERT INTO user(fname, lname, email, password_hash, created_at) 
-                    values (?, ?, ?, ?, ?)";
+        $query = "INSERT INTO user(fname, lname, email, password_hash, created_at, account_status, role) 
+                    values (?, ?, ?, ?, ?, ?, ?)";
         $statement = $this->db->prepare($query);
 
         if (!$statement)
@@ -31,7 +31,9 @@ class UserRepository
         $email = $user->getEmail();
         $passwordHash = $user->getPasswordHash();
         $createdAt = $user->getCreatedAt()->format('Y-m-d H:i:s');
-        $statement->bind_param('sssss', $fname, $lname, $email, $passwordHash, $createdAt);
+        $accountStatus = $user->getAccountStatus()->value;
+        $role = $user->getRole()->value;
+        $statement->bind_param('sssssss', $fname, $lname, $email, $passwordHash, $createdAt, $accountStatus, $role);
 
         if (!$statement->execute())
             throw new Exception("Failed to Add a User : " . $statement->error);

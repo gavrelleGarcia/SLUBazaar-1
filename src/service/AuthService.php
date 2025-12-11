@@ -14,6 +14,7 @@ class AuthService
     /**
      * Requirement A.1.1: Register new user
      * Validates SLU email, checks duplicates, hashes password, and saves.
+     * @throws Exception
      */
     public function register(string $fname, string $lname, string $email, string $password, string $confirmPassword): int
     {
@@ -27,30 +28,28 @@ class AuthService
             throw new Exception("Registration is restricted to @slu.edu.ph emails only.");
 
         // === BYPASS DATABASE CHECK FOR NOW ===
-        // if ($this->userRepo->findByEmail($email))
-        //    throw new Exception("This email is already registered.");
+        if ($this->userRepo->findByEmail($email))
+            throw new Exception("This email is already registered.");
 
-        $passwordHash = password_hash($password, PASSWORD_DEFAULT); 
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
         $user = $this->constructUser($fname, $lname, $email, $passwordHash);
-        
-        // === MOCK RETURN ID ===
-        // return $this->userRepo->addUser($user);
-        return 1; // Simulate success
+
+        return $this->userRepo->addUser($user);
     }
 
-    private function constructUser(string $fname, string $lname, string $email, string $passwordHash) : User 
+    private function constructUser(string $fname, string $lname, string $email, string $passwordHash): User
     {
         return new User(
-            null,                       
+            null,
             $fname,
             $lname,
             $email,
-            false,                      
-            $passwordHash,              
-            null,                       
-            new DateTimeImmutable(),    
-            AccountStatus::Unverified,  
-            Role::Member               
+            false,
+            $passwordHash,
+            null,
+            new DateTimeImmutable(),
+            AccountStatus::Unverified,
+            Role::Member
         );
     }
 
@@ -60,23 +59,18 @@ class AuthService
      */
     public function login(string $email, string $password): array
     {
-        // === TEMPORARY DATABASE BYPASS ===
-        // We simulate a successful login for ANY email/password for now.
-        // This structure perfectly mimics what the database WOULD return.
-        
-        // Hardcode a mock "User Array"
-        $mockUser = [
-            'user_id' => 1,
-            'email' => $email, // Use the email they typed
-            'role' => 'Member', // Default to Member
-            'fname' => 'TestUser',
-            'lname' => 'Lastname',
-            'account_status' => 'Active',
-            'password_hash' => password_hash($password, PASSWORD_DEFAULT) // Fake hash so verify passes
-        ];
+        // $mockUser = [
+        //     'user_id' => 1,
+        //     'email' => $email, // Use the email they typed
+        //     'role' => 'Member', // Default to Member
+        //     'fname' => 'TestUser',
+        //     'lname' => 'Lastname',
+        //     'account_status' => 'Active',
+        //     'password_hash' => password_hash($password, PASSWORD_DEFAULT) // Fake hash so verify passes
+        // ];
 
         // --- DATABASE LOGIC (COMMENTED OUT FOR LATER) ---
-        /*
+
         $user = $this->userRepo->findByEmail($email);
 
         if (!$user)
@@ -85,14 +79,14 @@ class AuthService
         if (!password_verify($password, $user['password_hash']))
             throw new Exception("Invalid email or password.");
 
-        if ($user['account_status'] === 'Banned')
+        if ($user['account_status'] === 'banned')
             throw new Exception("This account has been banned. Contact Admin.");
-            
-        return $user;
-        */
 
-        // Return mock data immediately
-        return $mockUser;
+        return $user;
+
+
+        // // Return mock data immediately
+        // return $mockUser;
     }
 
     /**
@@ -119,23 +113,23 @@ class AuthService
         $this->userRepo->updatePassword($userId, $newHash);
         */
     }
-    
+
     public function startUserSession(array $user): void
     {
         // Assumes session_start() is called in index.php
         session_regenerate_id(true);
 
-        $_SESSION['user_id'] = (int) $user['user_id'];
-        $_SESSION['email']   = $user['email'];
-        $_SESSION['role']    = $user['role']; 
-        $_SESSION['fname']   = $user['fname'];
-        
+        $_SESSION['user_id'] = (int)$user['user_id'];
+        $_SESSION['email'] = $user['email'];
+        $_SESSION['role'] = $user['role'];
+        $_SESSION['fname'] = $user['fname'];
+
         $_SESSION['last_activity'] = time();
     }
 
     public function logout(): void
     {
-        $_SESSION = []; 
+        $_SESSION = [];
 
         if (ini_get("session.use_cookies")) {
             $params = session_get_cookie_params();
@@ -161,7 +155,7 @@ class AuthService
         // === TEMPORARY: If no session, auto-login as ID 1 ===
         if (!isset($_SESSION['user_id'])) {
             // throw new Exception("Unauthorized. Please login.");
-            return 1; 
+            return 1;
         }
 
         if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 1800)) {
@@ -176,6 +170,7 @@ class AuthService
     private function isSluEmail(string $email): bool
     {
         // Optional: you can comment this out too if you want to test with 'admin@test.com'
-        return (bool) preg_match('/^[a-zA-Z0-9._%+-]+@slu\.edu\.ph$/i', $email);
+        return (bool)preg_match('/^[a-zA-Z0-9._%+-]+@slu\.edu\.ph$/i', $email);
+//        return true;
     }
 }
