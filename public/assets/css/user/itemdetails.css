@@ -1,0 +1,268 @@
+
+  /* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    color: #333;
+}
+
+/* Main Wrapper */
+.main-wrapper {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background-color: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    display: block;
+}
+
+/* Item Container */
+.item-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 2rem;
+    gap: 2rem;
+    width: 100%;
+}
+
+.left-container,
+.right-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+/* Left Container (Images) */
+.left-container {
+    align-items: center;
+}
+
+.item-image-wrapper {
+    width: 250px;
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.item-image-wrapper img {
+    width: 100%;
+    object-fit: contain;
+}
+
+/* Image Selector */
+.image-selector {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.image-selector img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.image-selector img:hover {
+    transform: scale(1.1);
+}
+
+/* Right Container */
+.right-container {
+    max-width: 600px;
+}
+
+h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+}
+
+/* Button Styles */
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Bidding Container */
+.bidding-container {
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border-radius: 1rem;
+    margin-top: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.bidding-container h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+}
+
+.bidding-container p {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Bid Details */
+.bid-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.info h3 {
+    margin: 0.5rem 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .item-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .left-container,
+    .right-container {
+        max-width: 100%;
+    }
+
+    .bid-container {
+        margin-top: 1rem;
+    }
+
+    .bid-details {
+        align-items: center;
+    }
+}
+
+/* Bidding Section */
+.bidding-section {
+    width: 100%;
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.bidding-card {
+    background: #ffffff;
+    padding: 1.8rem;
+    border-radius: 1rem;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    width: 100%;
+}
+
+.left-card {
+    flex: 1;
+}
+
+.right-card {
+    width: 40%;
+}
+
+.bidding-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.bid-info p {
+    padding: 0.5rem 0;
+    font-size: 1.05rem;
+}
+
+.history-list p {
+    padding: 0.4rem 0;
+    font-size: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.history-list p:last-child {
+    border-bottom: none;
+}
+
+/* Responsive Fix */
+@media (max-width: 768px) {
+    .bidding-section {
+        flex-direction: column;
+    }
+    .bidding-card {
+        width: 100%;
+    }
+}
+
+.bidding-inner {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.bidding-left, .bidding-right {
+    width: 50%;
+}
+
+.item-meta p {
+    margin: 0.3rem 0;
+    font-size: 1.05rem;
+}
+
+/* ---------------------------------------------------------- */
+/*      NEW — CENTERED "PLACE BID" BUTTON STYLES ADDED       */
+/* ---------------------------------------------------------- */
+
+.place-bid-btn {
+    margin-top: 1rem;
+    width: 200px;
+    padding: 0.9rem 1.4rem;
+
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+
+    background: #4A8DFF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    transition: all 0.25s ease;
+}
+
+
