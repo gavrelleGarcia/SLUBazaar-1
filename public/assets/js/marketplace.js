@@ -6,6 +6,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Start the timer update loop for real-time countdowns
     setInterval(updateTimers, 1000); 
     updateTimers(); // Run once immediately
+
+    document.addEventListener('click', () => {
+        const card = event.target.closest('.item-card');
+
+        if (card) {
+            const itemId = card.getAttribute('data-item-id');
+            if (itemId) {
+                console.log("Card clicked! ID:", itemId); // Debugging line
+                openItemDetails(itemId);
+            }
+        }
+    })
 });
 
 // --- 2. DATA FETCHING ---
@@ -84,7 +96,7 @@ function createCardHTML(item) {
                 <span class="timer-value" data-target="${item.timer.target}"></span>
             </div>
             <div style="margin-top: auto; width: 100%;">
-                ${btnHTML}
+                <button class="btn-action btn-bid">View / Bid</button>
             </div>
         </div>
     `;

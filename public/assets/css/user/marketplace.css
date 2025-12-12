@@ -67,6 +67,7 @@
     transition: transform 0.2s;
     position: relative;
     border: 2px solid transparent;
+    cursor: pointer;
 }
 .item-card:hover { transform: translateY(-5px); }
 .item-card.border-green { border-color: #22c55e; } 
