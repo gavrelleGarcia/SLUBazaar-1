@@ -27,7 +27,7 @@ class NotificationRepository
         $userId = $notification->getUserId();
         $notifTitle = $notification->getNotifTitle();
         $content = $notification->getContent();
-        $notifType = $notification->getNotifType();
+        $notifType = $notification->getNotifType()->value;
         $notifTime = $notification->getNotifTime()->format('Y-m-d H:i:s');
         $statement->bind_param('issss', $userId, $notifTitle, $content, $notifType, $notifTime);
 

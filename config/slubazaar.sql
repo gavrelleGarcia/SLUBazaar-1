@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 04, 2025 at 05:27 PM
+-- Generation Time: Dec 11, 2025 at 09:36 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -170,13 +170,13 @@ CREATE TABLE `item_image` (
 
 INSERT INTO `item_image` (`image_id`, `item_id`, `image_url`) VALUES
 (1, 1, 'uploads/items/textbook1_front.jpg'),
-(2, 1, 'uploads/items/textbook1_back.jpg'),
-(3, 2, 'uploads/items/stationery1_pen.jpg'),
+(2, 1, 'uploads/items/textbook1_back.webp'),
+(3, 2, 'uploads/items/stationery1_pen.webp'),
 (4, 3, 'uploads/items/elec1_calc.jpg'),
 (5, 4, 'uploads/items/sports1_front.jpg'),
 (6, 4, 'uploads/items/sports1_back.jpg'),
 (7, 4, 'uploads/items/sports1_pump.jpg'),
-(8, 5, 'uploads/items/acc1_umb.jpg'),
+(8, 5, 'uploads/items/acc1_umb.jpeg'),
 (9, 6, 'uploads/items/col1_card.jpg'),
 (10, 6, 'uploads/items/col1_back.jpg'),
 (11, 7, 'uploads/items/textbook2_cover.jpg'),
