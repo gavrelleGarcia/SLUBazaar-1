@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAuctions();
     setupTabs();
     // Start the timer update loop for real-time countdowns
-    setInterval(updateTimers, 1000); 
+    setInterval(updateTimers, 1000);
     updateTimers(); // Run once immediately
 
     document.addEventListener('click', () => {
@@ -26,11 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 async function fetchAuctions() {
     // Calls index.php?action=marketplace. Controller defaults to status='Active' and sort='newest'.
-    const url = 'index.php?action=marketplace'; 
-    
+    const url = 'index.php?action=marketplace';
+
     // apiFetch is defined in utils.js
-    const data = await apiFetch(url); 
-    
+    const data = await apiFetch(url);
+
     if (data && data.success === false) {
         console.error("Failed to fetch auctions:", data.error);
         return [];
@@ -67,19 +67,19 @@ function createCardHTML(item) {
     const price = item.price.amount;
     const priceLabel = item.price.label;
     const timerLabel = item.timer.label;
-    
+
     let borderClass = '';
     let badgeHTML = '';
-    
+
     // Status Logic
     let statusText = item.status;
     if (statusText === 'Pending') {
-        badgeHTML = `<span class="status-badge badge-closed">Pending</span>`; 
+        badgeHTML = `<span class="status-badge badge-closed">Pending</span>`;
         borderClass = 'opacity-75';
     } else {
-        badgeHTML = `<span class="status-badge badge-winning">Active</span>`; 
+        badgeHTML = `<span class="status-badge badge-winning">Active</span>`;
     }
-    
+
     // Button action redirects to the item details page
     const btnHTML = `<button class="btn-action btn-bid" onclick="openItemDetails(${item.itemId})">View / Bid</button>`;
 
@@ -109,7 +109,7 @@ function setupTabs() {
         tab.addEventListener('click', function() {
             tabs.forEach(t => t.classList.remove('active'));
             this.classList.add('active');
-            
+
             // Handle Tab Redirections to profile page as implemented in other views
             const tabText = this.innerText.trim();
             if(tabText.includes('Live Auctions')) {
@@ -137,14 +137,14 @@ function updateTimers() {
     document.querySelectorAll('.timer-value').forEach(timerElement => {
         const targetIso = timerElement.getAttribute('data-target');
         if (!targetIso) return;
-        
+
         const targetDate = new Date(targetIso);
         const now = new Date();
         let diff = targetDate.getTime() - now.getTime();
-        
+
         const labelElement = timerElement.previousElementSibling;
         const isEndsIn = labelElement && labelElement.innerText.includes('Ends in');
-        
+
         let display = '';
 
         if (diff < 0) {
@@ -165,10 +165,81 @@ function updateTimers() {
                 display = `${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
             }
         }
-        
+
         timerElement.innerText = display;
     });
 }
+// =============================
+//         ITEM DETAILS
+// =============================
+// 1. Image Gallery Logic
+function changeImage(src) {
+    document.getElementById('main-preview').src = src;
+}
+
+// 2. Bid Logic
+async function placeBid(itemId) {
+    const amount = document.getElementById('bid-amount').value;
+    const btn = document.querySelector('.btn-bid');
+
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+    btn.disabled = true;
+
+    const res = await apiFetch('index.php?action=place_bid', {
+        method: 'POST',
+        body: JSON.stringify({ item_id: itemId, amount: amount })
+    });
+
+    if (res && res.success) {
+        alert("Bid placed successfully!");
+        location.reload(); // Refresh to update history/price
+    } else {
+        alert(res.error || "Failed to place bid.");
+        btn.innerHTML = 'Place Bid';
+        btn.disabled = false;
+    }
+}
+
+// 3. Watchlist Logic
+async function toggleWatchlist(itemId, btn) {
+    const icon = btn.querySelector('i');
+
+    const res = await apiFetch('index.php?action=toggle_watchlist', {
+        method: 'POST',
+        body: JSON.stringify({ item_id: itemId })
+    });
+
+    if (res && res.success) {
+        if (res.is_watching) {
+            btn.classList.add('active');
+            icon.classList.remove('fa-regular');
+            icon.classList.add('fa-solid');
+        } else {
+            btn.classList.remove('active');
+            icon.classList.remove('fa-solid');
+            icon.classList.add('fa-regular');
+        }
+    }
+}
+
+// 4. Timer Logic (Simple version for this page)
+setInterval(() => {
+    const timer = document.querySelector('.timer-text');
+    const target = new Date(timer.dataset.target).getTime();
+    const now = new Date().getTime();
+    const dist = target - now;
+
+    if (dist < 0) {
+        timer.innerText = "Auction Ended";
+        document.querySelector('.btn-bid')?.remove();
+    } else {
+        const d = Math.floor(dist / (1000 * 60 * 60 * 24));
+        const h = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((dist % (1000 * 60)) / 1000);
+        timer.innerText = `${d}d ${h}h ${m}m ${s}s`;
+    }
+}, 1000);
 
 
 // Keeping the original modal functions as stubs because the HTML file contains the modal structure.
