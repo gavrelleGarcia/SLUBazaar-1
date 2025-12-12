@@ -34,7 +34,7 @@ if ($command === 'auction:worker') {
             // Sleep for 5 seconds to prevent high CPU usage
             sleep(5); 
 
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             echo "[ERROR] " . $e->getMessage() . "\n";
             sleep(5); // Sleep on error too
         }
